@@ -1,3 +1,4 @@
 *.pyc
 *.txt
 *test.py
+turtlebot_env.egg-info/PKG-INFO
