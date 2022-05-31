@@ -1,6 +1,6 @@
 # Turtlebot3 Pybullet Gym Environment
 
-Clone the code, and then install the environment from root directory (where setup.py is):
+Clone the code, and then install the environment from root directory (where setup.py located):
 
 ```
 pip install -e .
