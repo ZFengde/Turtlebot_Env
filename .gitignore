@@ -1,4 +1,5 @@
+turtlebot_env/resources/__pycache__/plane.cpython-38.pyc
+.gitignore
 *.pyc
 *.txt
 *test.py
-turtlebot_env.egg-info/PKG-INFO
