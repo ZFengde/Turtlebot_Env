@@ -17,5 +17,7 @@ env = gym.make('Turtlebot-v0', use_gui=True)
 ```
 
 v0: Fixed goal
+
 v1: Random goal, but dense reward
+
 v2: Random goal, with sparse reward
