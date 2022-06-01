@@ -15,3 +15,8 @@ register(
     id='Turtlebot-v2', 
     entry_point='turtlebot_env.envs:TurtleBotEnv_Sparse'
 )
+
+register(
+    id='Turtlebot-v3', 
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Parallel'
+)
