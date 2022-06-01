@@ -91,7 +91,6 @@ class TurtleBotEnv_Simple(gym.Env):
         # Reload the plane and car
         Plane(self.client)
         self.turtlebot = Turtlebot(self.client)
-        self.turtlebot_ID, _ = self.turtlebot.get_ids()
 
         # Set the target to a random target
         x = 1.5
