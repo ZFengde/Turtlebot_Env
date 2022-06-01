@@ -2,26 +2,19 @@ import gym
 import numpy as np
 import math
 import pybullet as p
-from turtlebot_env.resources.turtlebot import turtlebot
-from turtlebot_env.resources.plane import plane
-from turtlebot_env.resources.target import target
+from turtlebot_env.resources.turtlebot import Turtlebot
+from turtlebot_env.resources.plane import Plane
+from turtlebot_env.resources.target import Target
+from pybullet_utils import bullet_client
 
 class TurtleBotEnv_Parallel(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
     def __init__(self, batch_num = 5, use_gui=False):
-        if use_gui:
-            self.client = p.connect(p.GUI)
-        else:
-            self.client = p.connect(p.DIRECT)
-
-        '''
-        action space initialisation
-        should be the rotation speed omiga here
-        radius = 0.033, D = 0.22
-        V = (wl+wr)/2, W = (wl - wr)/D
-        '''
+        self.clients = [self]
+        for _ in range(batch_num):
+            self.clients.append(bullet_client.BulletClient(connection_mode=p.DIRECT))
 
         # here we should normalisation
         self.action_space = gym.spaces.box.Box(
@@ -39,12 +32,17 @@ class TurtleBotEnv_Parallel(gym.Env):
         self.np_random, _ = gym.utils.seeding.np_random()
 
         # placeholders
-        self.turtlebot = None
-        self.target = None
-        self.prev_dist_to_target = None
+        self.turtlebot = []
+        self.target = []
+        self.prev_dist_to_target = []
 
-    # this is what happened in every single step
-    def step(self, action):
+    def step(self):
+        pass
+
+    def reset(self):
+        pass
+
+    def step_per_env(self, action):
         # we need manually clip action input into (-1, 1) and then map it into desired velocity
         action = np.tanh(action)
         self.turtlebot.apply_action((action + 1) * 3.25)
@@ -79,19 +77,13 @@ class TurtleBotEnv_Parallel(gym.Env):
         info = None
         return ob, reward, self.done, info
 
-    # this is for generating random seeds for training
-    def seed(self, seed=None):
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
-        return [seed]
-
-    # this is reset function for initialising each episode
-    def reset(self):
-        p.resetSimulation(self.client)
+    def reset_per_env(self, client):
+        p.resetSimulation(client)
         p.setGravity(0, 0, -9.8)
         # Reload the plane and car
-        plane(self.client)
-        self.turtlebot = turtlebot(self.client)
-        self.turtlebot_ID, _ = self.turtlebot.get_ids()
+        Plane(client)
+        turtlebot = Turtlebot(client)
+        turtlebot_ID, _ = self.turtlebot.get_ids()
 
         # Set the target to a random target
         x = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
@@ -105,7 +97,7 @@ class TurtleBotEnv_Parallel(gym.Env):
         self.done = False
 
         # Visual element of the target
-        target(self.client, self.target)
+        Target(self.client, self.target)
 
         # Get observation to return
         turtlebot_ob = self.turtlebot.get_observation()
@@ -118,10 +110,15 @@ class TurtleBotEnv_Parallel(gym.Env):
         return np.concatenate((turtlebot_ob.reshape(3, 2), 
                                 self.target.reshape(1, 2)), dtype=np.float32)
 
-    # this is render function for enable GUI display
+    def seed(self, seed=None):
+        self.np_random, seed = gym.utils.seeding.np_random(seed)
+        return [seed]
+
+
     def render(self, mode='human'):
         pass
 
-    # for shut down and disconnect physical client/server
     def close(self):
-        p.disconnect(self.client)
+        for i in range(self.batch_num):
+            p.disconnect(self.clients[i])
+

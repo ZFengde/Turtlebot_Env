@@ -2,9 +2,9 @@ import gym
 import numpy as np
 import math
 import pybullet as p
-from turtlebot_env.resources.turtlebot import turtlebot
-from turtlebot_env.resources.plane import plane
-from turtlebot_env.resources.target import target
+from turtlebot_env.resources.turtlebot import Turtlebot
+from turtlebot_env.resources.plane import Plane
+from turtlebot_env.resources.target import Target
 
 class TurtleBotEnv_Sparse(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -86,8 +86,8 @@ class TurtleBotEnv_Sparse(gym.Env):
         p.resetSimulation(self.client)
         p.setGravity(0, 0, -9.8)
         # Reload the plane and car
-        plane(self.client)
-        self.turtlebot = turtlebot(self.client)
+        Plane(self.client)
+        self.turtlebot = Turtlebot(self.client)
         self.turtlebot_ID, _ = self.turtlebot.get_ids()
 
         # Set the target to a random target
@@ -102,7 +102,7 @@ class TurtleBotEnv_Sparse(gym.Env):
         self.done = False
 
         # Visual element of the target
-        target(self.client, self.target)
+        Target(self.client, self.target)
 
         # Get observation to return
         turtlebot_ob = self.turtlebot.get_observation()
