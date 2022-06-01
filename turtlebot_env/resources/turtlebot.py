@@ -3,7 +3,7 @@ import os
 import math
 import numpy as np
 
-class turtlebot:
+class Turtlebot:
     def __init__(self, client):
         # firstly initialisation with given client ID
         self.client = client

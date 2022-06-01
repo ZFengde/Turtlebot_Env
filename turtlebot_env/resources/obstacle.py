@@ -3,7 +3,7 @@ import os
 
 # create target class, with given urdf file and clinet ID
 # by specifying base position
-class obstacle:
+class Obstacle:
     def __init__(self, client, base):
         f_name = os.path.join(os.path.dirname(__file__), 'obstacle.urdf')
         p.loadURDF(fileName=f_name,
