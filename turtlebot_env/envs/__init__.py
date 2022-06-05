@@ -4,3 +4,4 @@ from turtlebot_env.envs.turtlebot_env import TurtleBotEnv
 from turtlebot_env.envs.turtlebot_env_sparse import TurtleBotEnv_Sparse
 from turtlebot_env.envs.turtlebot_env_simple import TurtleBotEnv_Simple
 from turtlebot_env.envs.turtlebot_env_parallel import TurtleBotEnv_Parallel
+from turtlebot_env.envs.turtlebot_env_speedup import TurtleBotEnv_Speedup
