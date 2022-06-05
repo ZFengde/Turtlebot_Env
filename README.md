@@ -16,8 +16,10 @@ import turtlebot_env
 env = gym.make('Turtlebot-v0', use_gui=True) 
 ```
 
-v0: Fixed goal
+v0: X fixed and Y random target, but over the limitatitions of of the robot
 
-v1: Random goal, but dense reward
+v1: Random target, but dense reward
 
-v2: Random goal, with sparse reward
+v2: Random target, with sparse reward
+
+v3: Random target with distance related reward, but over the limitatitions of of the robot
