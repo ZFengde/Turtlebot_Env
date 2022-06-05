@@ -9,6 +9,7 @@ register(
 )
 
 # random target with distance related reward
+# WORKING RIGHT NOW
 register(
     id='Turtlebot-v1', 
     entry_point='turtlebot_env.envs:TurtleBotEnv'
