@@ -47,7 +47,7 @@ class TurtleBotEnv_Speedup(gym.Env):
     def step(self, action):
         # we need manually clip action input into (-1, 1) and then map it into desired velocity
         action = np.tanh(action)
-        self.turtlebot.apply_action((action + 1) * 3.25 * 4)
+        self.turtlebot.apply_action((action + 1) * 3.25 * 5)
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation()
 
