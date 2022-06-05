@@ -44,11 +44,12 @@ class TurtleBotEnv_Parallel(gym.Env):
         self.prev_dist_to_target = []
 
     def step(self, actions):
-        batch_infos = Parallel(n_jobs=self.batch_num)(delayed(self.step_per_env)
-                                            (ID, actions) 
-                                            for ID in range(self.batch_num))
-        ob, reward, self.done, info = batch_infos
-        return ob, reward, self.done, info
+        # batch_infos = Parallel(n_jobs=self.batch_num)(delayed(self.step_per_env)
+        #                                     (ID, actions) 
+        #                                     for ID in range(self.batch_num))
+        # ob, reward, self.done, info = batch_infos
+        # return ob, reward, self.done, info
+        pass
 
     def step_per_env(self, ID, action):
         # we need manually clip action input into (-1, 1) and then map it into desired velocity
