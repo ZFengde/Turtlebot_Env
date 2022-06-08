@@ -23,3 +23,4 @@ v1: Random target, but dense reward
 v2: Random target, with sparse reward
 
 v3: Random target with distance related reward, but over the limitatitions of of the robot
+
