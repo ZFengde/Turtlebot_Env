@@ -20,16 +20,9 @@ register(
     entry_point='turtlebot_env.envs:TurtleBotEnv_Sparse'
 )
 
-# parallel version environment, not yet finished
-# TODO
-register(
-    id='Turtlebot-v3', 
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Parallel'
-)
-
 # random target with distance related reward, but speed up and break real features of the robot
 # WORKING RIGHT NOW
 register(
-    id='Turtlebot-v4', 
+    id='Turtlebot-v3', 
     entry_point='turtlebot_env.envs:TurtleBotEnv_Speedup'
 )
