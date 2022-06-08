@@ -2,6 +2,8 @@ import pybullet as p
 import os
 import math
 import numpy as np
+from multiprocessing import Process
+
 
 class Turtlebot:
     def __init__(self, client):
@@ -16,7 +18,7 @@ class Turtlebot:
         # 0 - wheel_left_joint
         # 1 - wheel_right_joint
         self.drive_joints = [0, 1]
-
+        
     def get_ids(self):
         # get body uniqued id and physics client/server id
         return self.turtlebot, self.client
@@ -24,7 +26,6 @@ class Turtlebot:
     def apply_action(self, action):
         # Expects action to be two dimensional, unpack action 
         left_wheel, right_wheel = action.squeeze()
-
         p.setJointMotorControlArray(
             bodyUniqueId=self.turtlebot,
             jointIndices=self.drive_joints,
@@ -33,7 +34,6 @@ class Turtlebot:
             forces=[1.2] * 2,
             physicsClientId=self.client)
 
-    # define how get observation can obtain
     def get_observation(self):
         # Get the position and orientation of the turtlebot in the simulation
         # where pos is xyz, and orientation xyzw quaternion direction
@@ -54,9 +54,6 @@ class Turtlebot:
         observation = np.array(pos + ori + vel)
 
         return observation
-
-
-
 
 
 

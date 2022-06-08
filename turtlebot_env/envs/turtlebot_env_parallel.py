@@ -6,7 +6,8 @@ from turtlebot_env.resources.turtlebot import Turtlebot
 from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 from pybullet_utils import bullet_client
-import multiprocessing as mp
+from multiprocessing import Process
+
 
 class TurtleBotEnv_Parallel(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -23,6 +24,10 @@ class TurtleBotEnv_Parallel(gym.Env):
             for ID in range(self.batch_num):
                 self.clients.append(bullet_client.BulletClient(connection_mode=p.DIRECT))
 
+        self.IDs = []
+        for ID in range(self.batch_num):
+            self.IDs.append(ID)
+            
         # here we should normalisation
         self.action_space = gym.spaces.box.Box(
             low=np.array([-1, -1], dtype=np.float32),
@@ -40,28 +45,31 @@ class TurtleBotEnv_Parallel(gym.Env):
 
         # placeholders
         self.turtlebots = []
-        self.target = []
+        self.targets = []
         self.prev_dist_to_target = []
+        self.processes = []
 
     def step(self, actions):
-        # batch_infos = Parallel(n_jobs=self.batch_num)(delayed(self.step_per_env)
-        #                                     (ID, actions) 
-        #                                     for ID in range(self.batch_num))
-        # ob, reward, self.done, info = batch_infos
-        # return ob, reward, self.done, info
-        pass
+        batch_obs = []
+        for ID in self.IDs:
+            process = Process(target=self.step_per_env, args=(ID, actions, ))
+            process.start()
+            self.processes.append(process)
+
+        for ID in self.IDs:
+            self.processes[ID].join()
+        return batch_obs
 
     def step_per_env(self, ID, action):
         # we need manually clip action input into (-1, 1) and then map it into desired velocity
         action = np.tanh(action)
-
-        self.turtlebot[ID].apply_action((action + 1) * 3.25)
-        p.stepSimulation(ID)
-        turtlebot_ob = self.turtlebot.get_observation()
+        self.turtlebots[ID].apply_action((action + 1) * 3.25)
+        self.clients[ID].stepSimulation()
+        turtlebot_ob = self.turtlebots[ID].get_observation()
 
         # step reward setting, compute L2 distance firstly
-        dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
-                                  (turtlebot_ob[1] - self.target[1]) ** 2))
+        dist_to_target = math.sqrt(((turtlebot_ob[0] - self.targets[ID][0]) ** 2 +
+                                  (turtlebot_ob[1] - self.targets[ID][1]) ** 2))
 
         # 1. foward reward, 2. time reward
         reward = 10 * (self.prev_dist_to_target[ID] - dist_to_target) - 0.01
@@ -81,7 +89,7 @@ class TurtleBotEnv_Parallel(gym.Env):
 
         # + here is actually concantenation
         ob = np.concatenate((turtlebot_ob.reshape(3, 2), 
-                                self.target.reshape(1, 2)), dtype=np.float32)
+                                self.targets.reshape(1, 2)), dtype=np.float32)
 
         # To be written
         info = None
@@ -89,7 +97,7 @@ class TurtleBotEnv_Parallel(gym.Env):
 
     def reset(self):
         batch_obs = []
-        for ID in range(self.batch_num):
+        for ID in self.IDs:
             batch_obs.append(self.reset_per_env(ID))
         return batch_obs
 
@@ -107,22 +115,21 @@ class TurtleBotEnv_Parallel(gym.Env):
              self.np_random.uniform(-1.3, -1.7))
 
         # self.target is the base position of the target
-        target = np.array((x, y), dtype=float)
-        
+        self.targets.append(np.array((x, y), dtype=float))
         self.done = False
 
         # Visual element of the target
-        Target(ID, target)
+        Target(ID, self.targets[ID])
 
         # Get observation to return
         turtlebot_ob = self.turtlebots[ID].get_observation()
         # this is for generating first prev_dist_to_target when initialising
         # for use in step function
-        self.prev_dist_to_target.append(math.sqrt(((turtlebot_ob[0] - target[0]) ** 2 +
-                                                     (turtlebot_ob[1] - target[1]) ** 2)))
+        self.prev_dist_to_target.append(math.sqrt(((turtlebot_ob[0] - self.targets[ID][0]) ** 2 +
+                                                     (turtlebot_ob[1] - self.targets[ID][1]) ** 2)))
 
         return np.concatenate((turtlebot_ob.reshape(3, 2), 
-                                target.reshape(1, 2)), dtype=np.float32)
+                                self.targets[ID].reshape(1, 2)), dtype=np.float32)
 
     def seed(self, seed=None):
         self.np_random, seed = gym.utils.seeding.np_random(seed)
@@ -133,5 +140,5 @@ class TurtleBotEnv_Parallel(gym.Env):
 
     def close(self):
         for ID in range(self.batch_num):
-            p.disconnect(self.clients[ID])
+            p.disconnect(ID)
 
