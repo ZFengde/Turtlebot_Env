@@ -52,6 +52,7 @@ class Turtlebot:
         vel = p.getBaseVelocity(self.turtlebot, self.client)[0][0:2]
         # Concatenate/pack position, orientation, velocity
         observation = np.array(pos + ori + vel)
+        
 
         return observation
 

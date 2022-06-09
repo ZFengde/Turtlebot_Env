@@ -73,12 +73,10 @@ class TurtleBotEnv_Simple(gym.Env):
             reward = 50
 
         # + here is actually concantenation
-        ob = np.concatenate((turtlebot_ob.reshape(3, 2), 
-                                self.target.reshape(1, 2)), dtype=np.float32)
-
+        obs = np.concatenate((turtlebot_ob, self.target))
         # To be written
-        info = None
-        return ob, reward, self.done, info
+        info = {}
+        return obs, reward, self.done, info
 
     # this is for generating random seeds for training
     def seed(self, seed=None):
@@ -112,9 +110,8 @@ class TurtleBotEnv_Simple(gym.Env):
         # for use in step function
         self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
                                            (turtlebot_ob[1] - self.target[1]) ** 2))
-
-        return np.concatenate((turtlebot_ob.reshape(3, 2), 
-                                self.target.reshape(1, 2)), dtype=np.float32)
+        obs = np.concatenate((turtlebot_ob, self.target))
+        return obs
 
     # this is render function for enable GUI display
     def render(self, mode='human'):
