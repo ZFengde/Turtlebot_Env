@@ -5,7 +5,8 @@ from gym.envs.registration import register
 # fixed target at x, y = (1.5, 1.5)
 register(
     id='Turtlebot-v0', 
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Simple'
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Simple',
+    max_episode_steps=1000
 )
 
 # random target with distance related reward
