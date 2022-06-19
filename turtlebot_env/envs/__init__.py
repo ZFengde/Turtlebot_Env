@@ -1,6 +1,4 @@
 # this is for connecting class from turtlebot_env.py
 
-from turtlebot_env.envs.turtlebot_env import TurtleBotEnv
-from turtlebot_env.envs.turtlebot_env_sparse import TurtleBotEnv_Sparse
-from turtlebot_env.envs.turtlebot_env_simple import TurtleBotEnv_Simple
-from turtlebot_env.envs.turtlebot_env_speedup import TurtleBotEnv_Speedup
+from turtlebot_env.envs.turtlebot_env_fix_xy import TurtleBotEnv_Fix_xy
+from turtlebot_env.envs.turtlebot_env_fix_x import TurtleBotEnv_Fix_x
