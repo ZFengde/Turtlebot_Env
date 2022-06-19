@@ -46,7 +46,6 @@ class TurtleBotEnv_Fix_xy(gym.Env):
 
     # this is what happened in every single step
     def step(self, action):
-        # we need manually clip action input into (-1, 1) and then map it into desired velocity
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation()
@@ -71,7 +70,6 @@ class TurtleBotEnv_Fix_xy(gym.Env):
             self.done = True
             reward = 50
 
-        # + here is actually concantenation
         obs = np.concatenate((turtlebot_ob, self.target))
         # To be written
         info = {}
@@ -93,8 +91,7 @@ class TurtleBotEnv_Fix_xy(gym.Env):
         # Set the target to a random target
         x = self.np_random.uniform(1.3, 1.7)
         y = self.np_random.uniform(1.3, 1.7)
-        # y = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
-        #      self.np_random.uniform(-1.3, -1.7))
+        
         # self.target is the base position of the target
         self.target = np.array((x, y), dtype=float)
         

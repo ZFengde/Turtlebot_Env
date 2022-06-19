@@ -70,13 +70,10 @@ class TurtleBotEnv_Fix_x(gym.Env):
             self.done = True
             reward = 50
 
-        # + here is actually concantenation
-        ob = np.concatenate((turtlebot_ob.reshape(3, 2), 
-                                self.target.reshape(1, 2)), dtype=np.float32)
-
+        obs = np.concatenate((turtlebot_ob, self.target))
         # To be written
-        info = None
-        return ob, reward, self.done, info
+        info = {}
+        return obs, reward, self.done, info
 
     # this is for generating random seeds for training
     def seed(self, seed=None):
@@ -90,11 +87,8 @@ class TurtleBotEnv_Fix_x(gym.Env):
         # Reload the plane and car
         Plane(self.client)
         self.turtlebot = Turtlebot(self.client)
-        self.turtlebot_ID, _ = self.turtlebot.get_ids()
 
         # Set the target to a random target
-        #x = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
-        #      self.np_random.uniform(-1.3, -1.7))
         x = self.np_random.uniform(1.3, 1.7)
         y = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
              self.np_random.uniform(-1.3, -1.7))
@@ -114,9 +108,8 @@ class TurtleBotEnv_Fix_x(gym.Env):
         # for use in step function
         self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
                                            (turtlebot_ob[1] - self.target[1]) ** 2))
-
-        return np.concatenate((turtlebot_ob.reshape(3, 2), 
-                                self.target.reshape(1, 2)), dtype=np.float32)
+        obs = np.concatenate((turtlebot_ob, self.target))
+        return obs
 
     # this is render function for enable GUI display
     def render(self, mode='human'):
