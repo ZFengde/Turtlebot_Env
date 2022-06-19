@@ -12,7 +12,8 @@ class TurtleBotEnv_Fix_x(gym.Env):
 
     # this is for gym environment initialisation
     def __init__(self, use_gui=False):
-        if use_gui:
+        self.use_gui = use_gui
+        if self.use_gui:
             self.client = p.connect(p.GUI)
         else:
             self.client = p.connect(p.DIRECT)
