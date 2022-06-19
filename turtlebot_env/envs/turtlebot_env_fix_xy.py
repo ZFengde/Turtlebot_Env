@@ -1,4 +1,4 @@
-# v0
+# v0 --- fixed x, y
 import gym
 import numpy as np
 import math

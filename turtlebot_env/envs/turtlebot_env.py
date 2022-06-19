@@ -1,4 +1,4 @@
-# v1 --- fixed x, random y
+# v2 --- random x, y
 import gym
 import numpy as np
 import math
@@ -7,7 +7,7 @@ from turtlebot_env.resources.turtlebot import Turtlebot
 from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 
-class TurtleBotEnv_Fix_x(gym.Env):
+class TurtleBotEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
@@ -89,7 +89,8 @@ class TurtleBotEnv_Fix_x(gym.Env):
         self.turtlebot = Turtlebot(self.client)
 
         # Set the target to a random target
-        x = self.np_random.uniform(1.3, 1.7)
+        x = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
+             self.np_random.uniform(-1.3, -1.7))
         y = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
              self.np_random.uniform(-1.3, -1.7))
 
