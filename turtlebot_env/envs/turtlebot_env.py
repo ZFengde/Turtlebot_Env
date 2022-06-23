@@ -50,13 +50,22 @@ class TurtleBotEnv(gym.Env):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation()
+        obs = np.concatenate((turtlebot_ob, self.target))
+        info = {}
+
+        pos = obs[:2]
+        ori = obs[2: 4]
+        vel = obs[4: 6]
+        target = obs[6:]
+        alpha = target - pos
+        beta = vel + ori
+        error_angle = self.angle(alpha, beta)
 
         # step reward setting, compute L2 distance firstly
-        dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
-                                  (turtlebot_ob[1] - self.target[1]) ** 2))
+        dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
-        reward = 10 * (self.prev_dist_to_target - dist_to_target) - 0.01
+        reward = 10 * (self.prev_dist_to_target - dist_to_target) - 5e-4 * (error_angle - 90) - 0.01
 
         self.prev_dist_to_target = dist_to_target
 
@@ -71,9 +80,6 @@ class TurtleBotEnv(gym.Env):
             self.done = True
             reward = 50
 
-        obs = np.concatenate((turtlebot_ob, self.target))
-        # To be written
-        info = {}
         return obs, reward, self.done, info
 
     # this is for generating random seeds for training
@@ -120,3 +126,12 @@ class TurtleBotEnv(gym.Env):
     # for shut down and disconnect physical client/server
     def close(self):
         p.disconnect(self.client)
+
+    def angle(self, v1, v2):
+        if np.linalg.norm(v1) == 0 or np.linalg.norm(v2) == 0:
+            return 0
+        else:
+            vector_dot_product = np.dot(v1, v2)
+            arccos = math.acos(vector_dot_product / (np.linalg.norm(v1) * np.linalg.norm(v2)))
+            angle = np.degrees(arccos)
+            return angle
