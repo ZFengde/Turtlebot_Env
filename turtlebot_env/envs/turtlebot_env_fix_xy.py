@@ -21,6 +21,7 @@ class TurtleBotEnv_Fix_xy(gym.Env):
         '''
         action space initialisation
         should be the rotation speed omiga here
+        action command * radius of wheel = ture velocity of the wheel
         radius = 0.033, D = 0.22
         V = (wl+wr)/2, W = (wl - wr)/D
         '''
