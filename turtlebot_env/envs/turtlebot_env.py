@@ -51,7 +51,6 @@ class TurtleBotEnv(gym.Env):
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation()
         obs = np.concatenate((turtlebot_ob, self.target))
-        info = {}
 
         pos = obs[:2]
         ori = obs[2: 4]
@@ -65,7 +64,7 @@ class TurtleBotEnv(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
-        reward = 10 * (self.prev_dist_to_target - dist_to_target) - 5e-4 * (error_angle - 90) - 0.01
+        reward = 10 * (self.prev_dist_to_target - dist_to_target) - 3e-4 * (error_angle - 90) - 0.01
 
         self.prev_dist_to_target = dist_to_target
 
@@ -79,8 +78,9 @@ class TurtleBotEnv(gym.Env):
         elif dist_to_target < 0.15:
             self.done = True
             reward = 50
+            self.info['Success'] = 'Yes'
 
-        return obs, reward, self.done, info
+        return obs, reward, self.done, self.info
 
     # this is for generating random seeds for training
     def seed(self, seed=None):
@@ -117,6 +117,7 @@ class TurtleBotEnv(gym.Env):
         self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
                                            (turtlebot_ob[1] - self.target[1]) ** 2))
         obs = np.concatenate((turtlebot_ob, self.target))
+        self.info = {'Success': 'No'}
         return obs
 
     # this is render function for enable GUI display

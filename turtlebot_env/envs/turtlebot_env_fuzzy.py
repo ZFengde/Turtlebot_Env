@@ -71,6 +71,7 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
         elif self.dist_to_target < 0.15:
             self.done = True
             reward = 50
+            self.info['Success'] = 'Yes'
 
         return obs, reward, self.done, info
 
@@ -108,6 +109,7 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
         self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
                                            (turtlebot_ob[1] - self.target[1]) ** 2))
         obs = np.concatenate((turtlebot_ob, self.target))
+        self.info = {'Success': 'No'}
         return obs
 
     # this is render function for enable GUI display
