@@ -1,4 +1,4 @@
-# v3 --- random x, y, fuzzy reward
+# v1 --- random x, y, fuzzy reward
 import gym
 import numpy as np
 import math
@@ -56,7 +56,6 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation()
         obs = np.concatenate((turtlebot_ob, self.target))
-        info = {}
 
         # 1. foward reward, 2. time reward
         reward = self.fuzzy_reward_calculation(obs)
@@ -73,7 +72,7 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
             reward = 50
             self.info['Success'] = 'Yes'
 
-        return obs, reward, self.done, info
+        return obs, reward, self.done, self.info
 
     # this is for generating random seeds for training
     def seed(self, seed=None):

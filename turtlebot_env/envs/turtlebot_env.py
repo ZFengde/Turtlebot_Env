@@ -1,4 +1,4 @@
-# v2 --- random x, y
+# v0 --- random x, y
 import gym
 import numpy as np
 import math
