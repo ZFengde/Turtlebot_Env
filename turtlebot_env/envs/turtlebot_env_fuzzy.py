@@ -150,21 +150,22 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
         return reward
 
     def _init_fuzzy_system(self):
-        delta_distance = ctrl.Antecedent(np.arange(0, 4.6, 0.1), 'delta_distance')
+        delta_distance = ctrl.Antecedent(np.arange(-4.5, 4.6, 0.1), 'delta_distance')
         e_angle = ctrl.Antecedent(np.arange(0, 181, 1), 'e_angle')
         reward = ctrl.Consequent(np.arange(-0.1, 0.11, 0.01), 'reward')
+        
+        delta_distance['low'] = fuzz.gaussmf(delta_distance.universe, -4.5, 1.5)
+        delta_distance['medium'] = fuzz.gaussmf(delta_distance.universe, 0, 1.5)
+        delta_distance['high'] = fuzz.gaussmf(delta_distance.universe, 4.5, 1.5)
 
-        delta_distance['low'] = fuzz.trimf(delta_distance.universe, [0, 0, 2.25])
-        delta_distance['medium'] = fuzz.trimf(delta_distance.universe, [0, 2.25, 4.5])
-        delta_distance['high'] = fuzz.trimf(delta_distance.universe, [2.25, 4.5, 4.5])
+        e_angle['low'] = fuzz.gaussmf(e_angle.universe, 0, 30)
+        e_angle['medium'] = fuzz.gaussmf(e_angle.universe, 90, 30)
+        e_angle['high'] = fuzz.gaussmf(e_angle.universe, 180, 30)
 
-        e_angle['low'] = fuzz.trimf(e_angle.universe, [0, 0, 90])
-        e_angle['medium'] = fuzz.trimf(e_angle.universe, [0, 90, 180])
-        e_angle['high'] = fuzz.trimf(e_angle.universe, [90, 180, 180])
+        reward['low'] = fuzz.gaussmf(reward.universe, -0.1, 0.033)
+        reward['medium'] = fuzz.gaussmf(reward.universe, 0, 0.033)
+        reward['high'] = fuzz.gaussmf(reward.universe, 0.1, 0.033)
 
-        reward['low'] = fuzz.trimf(reward.universe, [-0.1, -0.1, 0])
-        reward['medium'] = fuzz.trimf(reward.universe, [-0.1, 0, 0.1])
-        reward['high'] = fuzz.trimf(reward.universe, [0, 0.1, 0.1])
 
         rule1 = ctrl.Rule(antecedent=((delta_distance['high'] & e_angle['low']) |
                                     (delta_distance['high'] & e_angle['medium']) |
