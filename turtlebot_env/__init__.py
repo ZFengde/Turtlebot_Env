@@ -15,3 +15,10 @@ register(
     entry_point='turtlebot_env.envs:TurtleBotEnv_Fuzzy_Reward',
     max_episode_steps=1000
 )
+
+# random target at x = +-(1.3, 1.7), y = +-(1.3, 1.7), but fuzzy reward
+register(
+    id='Turtlebot-v2',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Fuzzy_2_Reward',
+    max_episode_steps=1000
+)
