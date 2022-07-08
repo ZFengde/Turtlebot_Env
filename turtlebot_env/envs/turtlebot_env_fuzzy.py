@@ -141,7 +141,7 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
         delta_distance = self.prev_dist_to_target - self.dist_to_target
         self.prev_dist_to_target = self.dist_to_target
 
-        self.reward_system.input['e_d'] = delta_distance * 1000
+        self.reward_system.input['e_d'] = delta_distance
         self.reward_system.input['e_a'] = error_angle
         self.reward_system.compute()
 
@@ -150,36 +150,65 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
         return reward
 
     def _init_fuzzy_system(self):
-        e_d = ctrl.Antecedent(np.arange(-4.5, 4.6, 0.1), 'e_d')
+        e_d = ctrl.Antecedent(np.arange(-4.5e-3, 4.6e-3, 1e-4), 'e_d')
         e_a = ctrl.Antecedent(np.arange(0, 181, 1), 'e_a')
         reward = ctrl.Consequent(np.arange(-0.1, 0.11, 0.01), 'reward')
 
-        e_d['small'] = fuzz.gaussmf(e_d.universe, -4.5, 1.5)
-        e_d['medium'] = fuzz.gaussmf(e_d.universe, 0, 1.5)
-        e_d['large'] = fuzz.gaussmf(e_d.universe, 4.5, 1.5)
+        e_d['BN'] = fuzz.gaussmf(e_d.universe, -4.5e-3, 1.5e-3)
+        e_d['SN'] = fuzz.gaussmf(e_d.universe, -2.25e-3, 1.5e-3)
+        e_d['Z'] = fuzz.gaussmf(e_d.universe, 0, 1.5e-3)
+        e_d['SP'] = fuzz.gaussmf(e_d.universe, 2.25e-3, 1.5e-3)
+        e_d['BP'] = fuzz.gaussmf(e_d.universe, 4.5e-3, 1.5e-3)
 
-        e_a['small'] = fuzz.gaussmf(e_a.universe, 0, 30)
+        e_a['tiny'] = fuzz.gaussmf(e_a.universe, 0, 30)
+        e_a['small'] = fuzz.gaussmf(e_a.universe, 45, 30)
         e_a['medium'] = fuzz.gaussmf(e_a.universe, 90, 30)
+        e_a['big'] = fuzz.gaussmf(e_a.universe, 135, 30)
         e_a['large'] = fuzz.gaussmf(e_a.universe, 180, 30)
 
-        reward['small'] = fuzz.gaussmf(reward.universe, -0.1, 0.033)
-        reward['medium'] = fuzz.gaussmf(reward.universe, 0, 0.033)
-        reward['large'] = fuzz.gaussmf(reward.universe, 0.1, 0.033)
+        reward['BN'] = fuzz.gaussmf(reward.universe, -0.1, 0.033)
+        reward['SN'] = fuzz.gaussmf(reward.universe, -0.05, 0.033)
+        reward['Z'] = fuzz.gaussmf(reward.universe, 0, 0.033)
+        reward['SP'] = fuzz.gaussmf(reward.universe, 0.05, 0.033)
+        reward['BP'] = fuzz.gaussmf(reward.universe, 0.1, 0.033)
 
-        rule1 = ctrl.Rule(antecedent=((e_d['large'] & e_a['small']) |
-                                    (e_d['large'] & e_a['medium']) |
-                                    (e_d['medium'] & e_a['small'])),
-                        consequent=reward['large'])
+        rule1 = ctrl.Rule(antecedent=((e_d['SN'] & e_a['large'])|
+                                    (e_d['SN'] & e_a['big'])|
+                                    (e_d['BN'] & e_a['large'])|
+                                    (e_d['BN'] & e_a['big'])|
+                                    (e_d['BN'] & e_a['medium'])|
+                                    (e_d['BN'] & e_a['small'])|
+                                    (e_d['BN'] & e_a['tiny'])),
+                        consequent=reward['BN'])
 
-        rule2 = ctrl.Rule(antecedent=((e_d['large'] & e_a['large']) |
-                                    (e_d['medium'] & e_a['medium']) |
-                                    (e_d['small'] & e_a['small'])),
-                        consequent=reward['medium'])
+        rule2 = ctrl.Rule(antecedent=((e_d['Z'] & e_a['large'])|
+                                    (e_d['Z'] & e_a['big'])|
+                                    (e_d['SN'] & e_a['medium'])|
+                                    (e_d['SN'] & e_a['small'])|
+                                    (e_d['SN'] & e_a['tiny'])),
+                        consequent=reward['SN'])
 
-        rule3 = ctrl.Rule(antecedent=((e_d['medium'] & e_a['large']) |
-                                    (e_d['small'] & e_a['medium']) |
-                                    (e_d['small'] & e_a['large'])),
-                        consequent=reward['small'])
+        rule3 = ctrl.Rule(antecedent=(
+                                    (e_d['SP'] & e_a['large'])|
+                                    (e_d['SP'] & e_a['big'])|
+                                    (e_d['Z'] & e_a['medium'])|
+                                    (e_d['Z'] & e_a['small'])|
+                                    (e_d['Z'] & e_a['tiny'])),
+                        consequent=reward['Z'])
 
-        reward_ctrl = ctrl.ControlSystem([rule1, rule2, rule3])
+        rule4 = ctrl.Rule(antecedent=(
+                                    (e_d['BP'] & e_a['large'])|
+                                    (e_d['BP'] & e_a['big'])|
+                                    (e_d['SP'] & e_a['medium'])|
+                                    (e_d['SP'] & e_a['small'])|
+                                    (e_d['SP'] & e_a['tiny'])),
+                        consequent=reward['SP'])
+
+        rule5 = ctrl.Rule(antecedent=(
+                                    (e_d['BP'] & e_a['tiny'])|
+                                    (e_d['BP'] & e_a['small'])|
+                                    (e_d['BP'] & e_a['medium'])),
+                        consequent=reward['BP'])
+
+        reward_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5])
         self.reward_system = ctrl.ControlSystemSimulation(reward_ctrl)

@@ -64,7 +64,7 @@ class TurtleBotEnv(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
-        reward = 8 * (self.prev_dist_to_target - dist_to_target) - 4e-4 * (error_angle - 90) - 0.01
+        reward = 7 * (self.prev_dist_to_target - dist_to_target) - 3.5e-4 * (error_angle - 90) - 0.01
     
         self.prev_dist_to_target = dist_to_target
 
