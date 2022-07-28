@@ -3,11 +3,14 @@ import turtlebot_env
 import pybullet as p
 import time
 
-env = gym.make('Turtlebot-v3', use_gui=False) 
-observation = env.reset()
-print(observation)
-# actions = []
-# for i in range(5):
-#     actions.append(env.action_space.sample())
+env = gym.make('Turtlebot-v1', use_gui=True) 
 
-# observation, reward, done, info = env.step(actions)
+actions = []
+while True:
+    observation = env.reset()
+    while True:
+        actions = env.action_space.sample()
+        obs, reward, done, info = env.step(actions)
+        time.sleep(1./240.)
+        if done:
+            break

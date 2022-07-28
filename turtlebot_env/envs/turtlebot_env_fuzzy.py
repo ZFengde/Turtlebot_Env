@@ -152,7 +152,7 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
     def _init_fuzzy_system(self):
         e_d = ctrl.Antecedent(np.arange(-4.5e-3, 4.6e-3, 1e-4), 'e_d')
         e_a = ctrl.Antecedent(np.arange(0, 181, 1), 'e_a')
-        reward = ctrl.Consequent(np.arange(-0.1, 0.11, 0.01), 'reward')
+        reward = ctrl.Consequent(np.arange(-0.15, 0.16, 0.01), 'reward')
 
         e_d['BN'] = fuzz.gaussmf(e_d.universe, -4.5e-3, 4.5e-3)
         e_d['SN'] = fuzz.gaussmf(e_d.universe, -2.25e-3, 2.25e-3)
@@ -166,11 +166,11 @@ class TurtleBotEnv_Fuzzy_Reward(gym.Env):
         e_a['big'] = fuzz.gaussmf(e_a.universe, 135, 45)
         e_a['large'] = fuzz.gaussmf(e_a.universe, 180, 90)
 
-        reward['BN'] = fuzz.gaussmf(reward.universe, -0.1, 0.05)
-        reward['SN'] = fuzz.gaussmf(reward.universe, -0.05, 0.05)
-        reward['Z'] = fuzz.gaussmf(reward.universe, 0, 0.05)
-        reward['SP'] = fuzz.gaussmf(reward.universe, 0.05, 0.05)
-        reward['BP'] = fuzz.gaussmf(reward.universe, 0.1, 0.05)
+        reward['BN'] = fuzz.gaussmf(reward.universe, -0.15, 0.075)
+        reward['SN'] = fuzz.gaussmf(reward.universe, -0.075, 0.075)
+        reward['Z'] = fuzz.gaussmf(reward.universe, 0, 0.075)
+        reward['SP'] = fuzz.gaussmf(reward.universe, 0.075, 0.075)
+        reward['BP'] = fuzz.gaussmf(reward.universe, 0.15, 0.075)
 
         rule1 = ctrl.Rule(antecedent=((e_d['Z'] & e_a['large'])|
                                     (e_d['SN'] & e_a['large'])|
