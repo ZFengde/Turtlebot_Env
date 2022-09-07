@@ -2,23 +2,30 @@
 
 from gym.envs.registration import register
 
-# random target at x = +-(1.3, 1.7), y = +-(1.3, 1.7)
+# navigation control, regular reward
 register(
     id='Turtlebot-v0', 
-    entry_point='turtlebot_env.envs:TurtleBotEnv',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_0',
     max_episode_steps=1000
 )
 
-# random target at x = +-(1.3, 1.7), y = +-(1.3, 1.7), but fuzzy reward
+# navigation contrl, fuzzy reward
 register(
     id='Turtlebot-v1',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Fuzzy_Reward',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_FuzzyReward_1',
     max_episode_steps=1000
 )
 
-# random target at x = +-(1.3, 1.7), y = +-(1.3, 1.7), but fuzzy reward
+# tracking control, regular reward
 register(
     id='Turtlebot-v2',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Fuzzy_2_Reward',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_2',
+    max_episode_steps=1000
+)
+
+# regular control, fuzzy reward
+register(
+    id='Turtlebot-v3',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_FuzzyReward_3',
     max_episode_steps=1000
 )

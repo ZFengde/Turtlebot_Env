@@ -1,4 +1,4 @@
-# v0 --- random x, y
+# v0 --- random x, y, navigation control
 import gym
 import numpy as np
 import math
@@ -7,7 +7,7 @@ from turtlebot_env.resources.turtlebot import Turtlebot
 from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 
-class TurtleBotEnv(gym.Env):
+class TurtleBotEnv_2(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation

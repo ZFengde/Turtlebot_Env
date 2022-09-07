@@ -1,4 +1,4 @@
-# v1 --- random x, y, fuzzy reward
+# v0 --- random x, y, navigation control
 import gym
 import numpy as np
 import math
@@ -6,10 +6,8 @@ import pybullet as p
 from turtlebot_env.resources.turtlebot import Turtlebot
 from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
-import skfuzzy as fuzz
-from skfuzzy import control as ctrl
 
-class TurtleBotEnv_Fuzzy_2_Reward(gym.Env):
+class TurtleBotEnv_0(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
@@ -47,9 +45,6 @@ class TurtleBotEnv_Fuzzy_2_Reward(gym.Env):
         self.target = None
         self.prev_dist_to_target = None
 
-        # initialise self fuzzy inference system
-        self._init_fuzzy_system()
-
     # this is what happened in every single step
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
@@ -57,8 +52,21 @@ class TurtleBotEnv_Fuzzy_2_Reward(gym.Env):
         turtlebot_ob = self.turtlebot.get_observation()
         obs = np.concatenate((turtlebot_ob, self.target))
 
+        pos = obs[:2]
+        ori = obs[2: 4]
+        vel = obs[4: 6]
+        target = obs[6:]
+        alpha = target - pos
+        beta = vel + ori
+        error_angle = self.angle(alpha, beta)
+
+        # step reward setting, compute L2 distance firstly
+        dist_to_target = np.linalg.norm(pos - target)
+
         # 1. foward reward, 2. time reward
-        reward = self.fuzzy_reward_calculation(obs)
+        reward = 7 * (self.prev_dist_to_target - dist_to_target) - 3.5e-4 * (error_angle - 90) - 0.01
+    
+        self.prev_dist_to_target = dist_to_target
 
         # 3. Done by running off boundaries penalty
         if (turtlebot_ob[0] >= 2 or turtlebot_ob[0] <= -2 or
@@ -67,7 +75,7 @@ class TurtleBotEnv_Fuzzy_2_Reward(gym.Env):
             reward = -10
 
         # 4. Done by reaching target reward
-        elif self.dist_to_target < 0.15:
+        elif dist_to_target < 0.15:
             self.done = True
             reward = 50
             self.info['Success'] = 'Yes'
@@ -95,6 +103,7 @@ class TurtleBotEnv_Fuzzy_2_Reward(gym.Env):
 
         # self.target is the base position of the target
         self.target = np.array((x, y), dtype=float)
+        
         self.done = False
 
         # Visual element of the target
@@ -127,59 +136,3 @@ class TurtleBotEnv_Fuzzy_2_Reward(gym.Env):
             arccos = math.acos(vector_dot_product / (np.linalg.norm(v1) * np.linalg.norm(v2)))
             angle = np.degrees(arccos)
             return angle
-
-    def fuzzy_reward_calculation(self, obs):
-        pos = obs[:2]
-        ori = obs[2: 4]
-        vel = obs[4: 6]
-        target = obs[6:]
-
-        alpha = target - pos
-        beta = vel + ori
-        error_angle = self.angle(alpha, beta)
-        self.dist_to_target = np.linalg.norm(pos - target)
-        delta_distance = self.prev_dist_to_target - self.dist_to_target
-        self.prev_dist_to_target = self.dist_to_target
-
-        self.reward_system.input['e_d'] = delta_distance * 1000
-        self.reward_system.input['e_a'] = error_angle
-        self.reward_system.compute()
-
-        # -0.01 is time elapse negative reward
-        reward = self.reward_system.output['reward'] - 0.01
-        return reward
-
-    def _init_fuzzy_system(self):
-        e_d = ctrl.Antecedent(np.arange(-4.5, 4.6, 0.1), 'e_d')
-        e_a = ctrl.Antecedent(np.arange(0, 181, 1), 'e_a')
-        reward = ctrl.Consequent(np.arange(-0.1, 0.11, 0.01), 'reward')
-
-        e_d['small'] = fuzz.gaussmf(e_d.universe, -4.5, 1.5)
-        e_d['medium'] = fuzz.gaussmf(e_d.universe, 0, 1.5)
-        e_d['large'] = fuzz.gaussmf(e_d.universe, 4.5, 1.5)
-
-        e_a['small'] = fuzz.gaussmf(e_a.universe, 0, 30)
-        e_a['medium'] = fuzz.gaussmf(e_a.universe, 90, 30)
-        e_a['large'] = fuzz.gaussmf(e_a.universe, 180, 30)
-
-        reward['small'] = fuzz.gaussmf(reward.universe, -0.1, 0.033)
-        reward['medium'] = fuzz.gaussmf(reward.universe, 0, 0.033)
-        reward['large'] = fuzz.gaussmf(reward.universe, 0.1, 0.033)
-
-        rule1 = ctrl.Rule(antecedent=((e_d['large'] & e_a['small']) |
-                                    (e_d['large'] & e_a['medium']) |
-                                    (e_d['medium'] & e_a['small'])),
-                        consequent=reward['large'])
-
-        rule2 = ctrl.Rule(antecedent=((e_d['large'] & e_a['large']) |
-                                    (e_d['medium'] & e_a['medium']) |
-                                    (e_d['small'] & e_a['small'])),
-                        consequent=reward['medium'])
-
-        rule3 = ctrl.Rule(antecedent=((e_d['medium'] & e_a['large']) |
-                                    (e_d['small'] & e_a['medium']) |
-                                    (e_d['small'] & e_a['large'])),
-                        consequent=reward['small'])
-
-        reward_ctrl = ctrl.ControlSystem([rule1, rule2, rule3])
-        self.reward_system = ctrl.ControlSystemSimulation(reward_ctrl)
