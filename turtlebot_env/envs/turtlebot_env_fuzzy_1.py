@@ -1,4 +1,4 @@
-# v1 --- random x, y, fuzzy reward, navigation control
+# v1 --- fuzzy reward, navigation control
 import gym
 import numpy as np
 import math

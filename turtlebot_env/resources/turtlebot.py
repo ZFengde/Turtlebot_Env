@@ -6,13 +6,13 @@ from multiprocessing import Process
 
 
 class Turtlebot:
-    def __init__(self, client):
+    def __init__(self, client, Pos=[0, 0, 0.03]):
         # firstly initialisation with given client ID
         self.client = client
         # create turtlebot with given urdf file
         f_name = os.path.join(os.path.dirname(__file__), 'turtlebot.urdf')
         self.turtlebot = p.loadURDF(fileName=f_name,
-                              basePosition=[0, 0, 0.03],
+                              basePosition=Pos,
                               physicsClientId=client)
 
         # 0 - wheel_left_joint

@@ -1,4 +1,4 @@
-# v1 --- random x, y, fuzzy reward, tracking control
+# v3 --- fuzzy reward, tracking control
 import gym
 import numpy as np
 import math

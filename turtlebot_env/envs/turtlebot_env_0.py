@@ -1,4 +1,4 @@
-# v0 --- random x, y, navigation control
+# v0 --- regular reward, navigation control
 import gym
 import numpy as np
 import math

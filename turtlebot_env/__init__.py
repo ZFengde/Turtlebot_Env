@@ -20,12 +20,12 @@ register(
 register(
     id='Turtlebot-v2',
     entry_point='turtlebot_env.envs:TurtleBotEnv_2',
-    max_episode_steps=1000
+    max_episode_steps=1500
 )
 
 # regular control, fuzzy reward
 register(
     id='Turtlebot-v3',
     entry_point='turtlebot_env.envs:TurtleBotEnv_FuzzyReward_3',
-    max_episode_steps=1000
+    max_episode_steps=1500
 )
