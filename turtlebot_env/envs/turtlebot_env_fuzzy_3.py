@@ -12,7 +12,7 @@ class TurtleBotEnv_FuzzyReward_3(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False):
+    def __init__(self, use_gui=True):
         self.use_gui = use_gui
         if self.use_gui:
             self.client = p.connect(p.GUI)
