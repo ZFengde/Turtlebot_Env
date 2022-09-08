@@ -5,7 +5,6 @@ import math
 import pybullet as p
 from turtlebot_env.resources.turtlebot import Turtlebot
 from turtlebot_env.resources.plane2 import Plane2
-from turtlebot_env.resources.target import Target
 
 class TurtleBotEnv_2(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -107,7 +106,7 @@ class TurtleBotEnv_2(gym.Env):
         self.turtlebot = Turtlebot(self.client, Pos=[-2.5, -2.5, 0.03])
 
         turtlebot_ob = self.turtlebot.get_observation()
-        target_pos = self.target.get_observation()
+        target_pos = self.target.get_observation()[:2]
 
         self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - target_pos[0]) ** 2 +
                                            (turtlebot_ob[1] - target_pos[1]) ** 2))
