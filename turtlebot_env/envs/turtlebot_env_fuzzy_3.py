@@ -4,8 +4,7 @@ import numpy as np
 import math
 import pybullet as p
 from turtlebot_env.resources.turtlebot import Turtlebot
-from turtlebot_env.resources.plane import Plane
-from turtlebot_env.resources.target import Target
+from turtlebot_env.resources.plane2 import Plane2
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 
@@ -44,7 +43,6 @@ class TurtleBotEnv_FuzzyReward_3(gym.Env):
 
         # placeholders
         self.turtlebot = None
-        self.target = None
         self.prev_dist_to_target = None
 
         # initialise self fuzzy inference system
@@ -53,16 +51,20 @@ class TurtleBotEnv_FuzzyReward_3(gym.Env):
     # this is what happened in every single step
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
+        self.target.apply_action(np.random.rand(2) * 3.25 * 5) # half velocity
+
         p.stepSimulation()
+
         turtlebot_ob = self.turtlebot.get_observation()
-        obs = np.concatenate((turtlebot_ob, self.target))
+        target_pos = self.target.get_observation()[:2]
+
+        obs = np.concatenate((turtlebot_ob, target_pos))
 
         # 1. foward reward, 2. time reward
         reward = self.fuzzy_reward_calculation(obs)
-
+    
         # 3. Done by running off boundaries penalty
-        if (turtlebot_ob[0] >= 2 or turtlebot_ob[0] <= -2 or
-                turtlebot_ob[1] >= 2 or turtlebot_ob[1] <= -2):
+        if self.dist_to_target > 6.5:
             self.done = True
             reward = -10
 
@@ -83,32 +85,25 @@ class TurtleBotEnv_FuzzyReward_3(gym.Env):
     def reset(self):
         p.resetSimulation(self.client)
         p.setGravity(0, 0, -9.8)
-        # Reload the plane and car
-        Plane(self.client)
-        self.turtlebot = Turtlebot(self.client)
-
-        # Set the target to a random target
-        x = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
-             self.np_random.uniform(-1.3, -1.7))
-        y = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
-             self.np_random.uniform(-1.3, -1.7))
-
-        # self.target is the base position of the target
-        self.target = np.array((x, y), dtype=float)
         self.done = False
 
-        # Visual element of the target
-        Target(self.client, self.target)
+        # Set the target to a random target
+        x_target = self.np_random.uniform(-1.5, -1.7)
+        y_target = (self.np_random.uniform(1.5, 1.7) if self.np_random.randint(2) else
+             self.np_random.uniform(-1.5, -1.7))
 
-        # Get observation to return
+        Plane2(self.client)
+        self.target = Turtlebot(self.client, Pos = [x_target, y_target, 0.03])
+        self.turtlebot = Turtlebot(self.client, Pos=[-2.5, -2.5, 0.03])
+
         turtlebot_ob = self.turtlebot.get_observation()
+        target_pos = self.target.get_observation()[:2]
 
-        # this is for generating first prev_dist_to_target when initialising
-        # for use in step function
-        self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
-                                           (turtlebot_ob[1] - self.target[1]) ** 2))
-        obs = np.concatenate((turtlebot_ob, self.target))
+        self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - target_pos[0]) ** 2 +
+                                           (turtlebot_ob[1] - target_pos[1]) ** 2))
+        obs = np.concatenate((turtlebot_ob, target_pos))
         self.info = {'Success': 'No'}
+        
         return obs
 
     # this is render function for enable GUI display
