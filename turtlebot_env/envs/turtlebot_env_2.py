@@ -46,7 +46,7 @@ class TurtleBotEnv_2(gym.Env):
     # this is what happened in every single step
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
-        self.target.apply_action(np.random.rand(2) * 3.25 * 5 * 2)
+        self.target.apply_action(np.random.rand(2) * 3.25 * 5) # half velocity
 
         p.stepSimulation()
 
