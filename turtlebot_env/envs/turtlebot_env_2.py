@@ -96,8 +96,7 @@ class TurtleBotEnv_2(gym.Env):
         self.done = False
 
         # Set the target to a random target
-        x_target = (self.np_random.uniform(1.5, 1.7) if self.np_random.randint(2) else
-             self.np_random.uniform(-1.5, -1.7))
+        x_target = self.np_random.uniform(-1.5, -1.7)
         y_target = (self.np_random.uniform(1.5, 1.7) if self.np_random.randint(2) else
              self.np_random.uniform(-1.5, -1.7))
 
