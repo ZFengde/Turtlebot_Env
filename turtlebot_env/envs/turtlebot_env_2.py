@@ -67,7 +67,7 @@ class TurtleBotEnv_2(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
-        reward = 7 * (self.prev_dist_to_target - dist_to_target) - 3.5e-4 * (error_angle - 90) - 0.01
+        reward = 7 * (self.prev_dist_to_target - dist_to_target) - 3.5e-4 * (error_angle - 90) - 0.05
     
         self.prev_dist_to_target = dist_to_target
 
@@ -77,7 +77,7 @@ class TurtleBotEnv_2(gym.Env):
             reward = -10
 
         # 4. Done by reaching target reward
-        elif dist_to_target < 0.15:
+        elif dist_to_target < 0.2:
             self.done = True
             reward = 50
             self.info['Success'] = 'Yes'

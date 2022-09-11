@@ -69,7 +69,7 @@ class TurtleBotEnv_FuzzyReward_3(gym.Env):
             reward = -10
 
         # 4. Done by reaching target reward
-        elif self.dist_to_target < 0.15:
+        elif self.dist_to_target < 0.2:
             self.done = True
             reward = 50
             self.info['Success'] = 'Yes'
@@ -141,7 +141,7 @@ class TurtleBotEnv_FuzzyReward_3(gym.Env):
         self.reward_system.compute()
 
         # -0.01 is time elapse negative reward
-        reward = self.reward_system.output['reward'] - 0.01
+        reward = self.reward_system.output['reward'] - 0.05
         return reward
 
     def _init_fuzzy_system(self):
