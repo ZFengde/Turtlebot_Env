@@ -88,9 +88,8 @@ class TurtleBotEnv_FuzzyReward_3(gym.Env):
         self.done = False
 
         # Set the target to a random target
-        x_target = self.np_random.uniform(-1.5, -1.7)
-        y_target = (self.np_random.uniform(1.5, 1.7) if self.np_random.randint(2) else
-             self.np_random.uniform(-1.5, -1.7))
+        x_target = self.np_random.uniform(0, -1)
+        y_target = self.np_random.uniform(-1.7, 1.7)
 
         Plane2(self.client)
         self.target = Turtlebot(self.client, Pos = [x_target, y_target, 0.03])
