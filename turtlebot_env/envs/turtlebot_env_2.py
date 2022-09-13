@@ -10,7 +10,7 @@ class TurtleBotEnv_2(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=True):
+    def __init__(self, use_gui=False):
         self.use_gui = use_gui
         if self.use_gui:
             self.client = p.connect(p.GUI)
@@ -46,7 +46,7 @@ class TurtleBotEnv_2(gym.Env):
     # this is what happened in every single step
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
-        self.target.apply_action(np.random.rand(2) * 3.25 * 5) # half velocity
+        self.target.apply_action((np.random.rand(2)+0.5) * 3.25 * 5) # half velocity
 
         p.stepSimulation()
 
