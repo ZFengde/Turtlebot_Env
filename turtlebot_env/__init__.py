@@ -29,3 +29,10 @@ register(
     entry_point='turtlebot_env.envs:TurtleBotEnv_FuzzyReward_3',
     max_episode_steps=1500
 )
+
+# regular control, fuzzy reward
+register(
+    id='Turtlebot-v4',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_4',
+    max_episode_steps=1500
+)
