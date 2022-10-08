@@ -1,4 +1,4 @@
-# v0 --- regular reward, navigation control with obstacles
+# v4 --- regular reward, navigation control with obstacles
 import gym
 import numpy as np
 import math
@@ -51,12 +51,12 @@ class TurtleBotEnv_4(gym.Env):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation()
-        obs = np.concatenate((turtlebot_ob, self.target))
+        obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
 
         pos = obs[:2]
         ori = obs[2: 4]
         vel = obs[4: 6]
-        target = obs[6:]
+        target = obs[6: 8]
         alpha = target - pos
         beta = vel + ori
         error_angle = self.angle(alpha, beta)
@@ -89,6 +89,7 @@ class TurtleBotEnv_4(gym.Env):
                 self.done = True
                 reward = -15
 
+        # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
 
     # this is for generating random seeds for training
@@ -122,7 +123,7 @@ class TurtleBotEnv_4(gym.Env):
         # for use in step function
         self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
                                            (turtlebot_ob[1] - self.target[1]) ** 2))
-        obs = np.concatenate((turtlebot_ob, self.target))
+        obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
         self.info = {'Success': 'No', 'Obstacles_info': self.obstacle_bases}
 
         return obs

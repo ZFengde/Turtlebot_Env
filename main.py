@@ -7,8 +7,9 @@ env = gym.make('Turtlebot-v4', use_gui=True)
 
 actions = []
 while True:
-    observation = env.reset()
+    obs = env.reset()
     while True:
+        print(obs)
         actions = env.action_space.sample()
         obs, reward, done, info = env.step(actions)
         time.sleep(1./240.)
