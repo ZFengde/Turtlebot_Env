@@ -50,7 +50,7 @@ class TurtleBotEnv_4(gym.Env):
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
         p.stepSimulation()
-        turtlebot_ob = self.turtlebot.get_observation()
+        turtlebot_ob = self.turtlebot.get_observation() 
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
 
         pos = obs[:2]
