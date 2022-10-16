@@ -35,8 +35,8 @@ class TurtleBotEnv_4(gym.Env):
         # observation = xy position[1, 2], xy orientation[3, 4]
         # xy direction velocity[5, 6], target xy position[7, 8]
         self.observation_space = gym.spaces.box.Box(
-            low=np.array([-5, -5, -1, -1, -3, -3, -5, -5], dtype=np.float32),
-            high=np.array([5, 5, 1, 1, 3, 3, 5, 5], dtype=np.float32))
+            low=np.array([-5, -5, -1, -1, -3, -3, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5], dtype=np.float32),
+            high=np.array([5, 5, 1, 1, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], dtype=np.float32))
         
         # this is for random initialisation, could be replaced by another method
         self.np_random, _ = gym.utils.seeding.np_random()
