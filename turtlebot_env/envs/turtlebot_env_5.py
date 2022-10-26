@@ -1,4 +1,4 @@
-# v4 --- regular reward, navigation control with obstacles
+# v5 --- regular reward, navigation control with only 1 obstacle
 import gym
 import numpy as np
 import math
@@ -8,7 +8,7 @@ from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 from turtlebot_env.resources.obstacle import Obstacle
 
-class TurtleBotEnv_4(gym.Env):
+class TurtleBotEnv_5(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
@@ -26,6 +26,8 @@ class TurtleBotEnv_4(gym.Env):
         V = (wl+wr)/2, W = (wl - wr)/D
         '''
 
+        # here we can easily change the number of obstalces
+        self.obstacle_num = 2
         # here we should normalisation
         self.action_space = gym.spaces.box.Box(
             low=np.array([-1, -1], dtype=np.float32),
@@ -109,7 +111,7 @@ class TurtleBotEnv_4(gym.Env):
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1.1, -1.1), high=(1.1, 1.1), size=(7, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1.1, -1.1), high=(1.1, 1.1), size=(self.obstacle_num, 2))
         self.done = False
 
         x_target = np.random.uniform(1.3, 1.7)
