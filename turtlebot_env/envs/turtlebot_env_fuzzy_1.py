@@ -16,7 +16,7 @@ class TurtleBotEnv_FuzzyReward_1(gym.Env):
     def __init__(self, use_gui=False):
         self.use_gui = use_gui
         if self.use_gui:
-            self.client = p.connect(p.GUI)
+            self.client = p.connect(p.GUI) # in this setting we can record video
         else:
             self.client = p.connect(p.DIRECT)
 
@@ -92,6 +92,9 @@ class TurtleBotEnv_FuzzyReward_1(gym.Env):
              self.np_random.uniform(-1.3, -1.7))
         y = (self.np_random.uniform(1.3, 1.7) if self.np_random.randint(2) else
              self.np_random.uniform(-1.3, -1.7))
+
+        x = self.np_random.uniform(-1.7, 1.7)
+        y = self.np_random.uniform(-1.7, 1.7)
 
         # self.target is the base position of the target
         self.target = np.array((x, y), dtype=float)

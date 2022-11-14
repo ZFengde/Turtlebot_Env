@@ -12,8 +12,9 @@ class TurtleBotEnv_4(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=True):
+    def __init__(self, use_gui=False, obstalce_num=3):
         self.use_gui = use_gui
+        self.obstalce_num = obstalce_num
         if self.use_gui:
             self.client = p.connect(p.GUI)
         else:
@@ -34,9 +35,11 @@ class TurtleBotEnv_4(gym.Env):
         # observation space initialisation
         # observation = xy position[1, 2], xy orientation[3, 4]
         # xy direction velocity[5, 6], target xy position[7, 8]
-        self.observation_space = gym.spaces.box.Box(
-            low=np.array([-5, -5, -1, -1, -3, -3, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5], dtype=np.float32),
-            high=np.array([5, 5, 1, 1, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], dtype=np.float32))
+        
+         # should >= 1
+        low = np.concatenate((np.array([-5, -5, -1, -1, -3, -3, -5, -5]), np.ones(self.obstalce_num) * -5, np.ones(self.obstalce_num) * -5), dtype=np.float32)
+        high = np.concatenate((np.array([5, 5, 1, 1, 3, 3, 5, 5]), np.ones(self.obstalce_num) * 5, np.ones(self.obstalce_num) * 5), dtype=np.float32)
+        self.observation_space = gym.spaces.box.Box(low=low, high=high)
         
         # this is for random initialisation, could be replaced by another method
         self.np_random, _ = gym.utils.seeding.np_random()
@@ -66,6 +69,7 @@ class TurtleBotEnv_4(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
+        # reward = 10 * (self.prev_dist_to_target - dist_to_target) - 1e-4 * (error_angle - 90) - 0.01
         reward = 10 * (self.prev_dist_to_target - dist_to_target) - 1e-4 * (error_angle - 90) - 0.01
     
         self.prev_dist_to_target = dist_to_target
@@ -87,7 +91,7 @@ class TurtleBotEnv_4(gym.Env):
             distance = np.linalg.norm(pos - ele)
             if distance < 0.3:
                 self.done = True
-                reward = -7.5
+                reward = -30
 
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
@@ -109,7 +113,7 @@ class TurtleBotEnv_4(gym.Env):
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1.1, -1.1), high=(1.1, 1.1), size=(7, 2))
+        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstalce_num, 2))
         self.done = False
 
         x_target = np.random.uniform(1.3, 1.7)
