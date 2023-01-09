@@ -87,6 +87,7 @@ class TurtleBotEnv_4(gym.Env):
             self.info['Success'] = 'Yes'
 
         # 4. Done by collision with obstacle
+        # TODO, need to modify here
         for ele in self.obstacle_bases:
             distance = np.linalg.norm(pos - ele)
             if distance < 0.3:
