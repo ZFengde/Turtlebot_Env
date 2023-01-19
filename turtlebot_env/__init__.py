@@ -5,41 +5,27 @@ from gym.envs.registration import register
 # navigation control, regular reward
 register(
     id='Turtlebot-v0', 
-    entry_point='turtlebot_env.envs:TurtleBotEnv_0',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Navi',
     max_episode_steps=1000
 )
 
 # navigation contrl, fuzzy reward
 register(
     id='Turtlebot-v1',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_FuzzyReward_1',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Navi_Fuzzy',
     max_episode_steps=1000
 )
 
-# tracking control, regular reward
+# regular control, fuzzy reward
 register(
     id='Turtlebot-v2',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_2',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Constrained',
     max_episode_steps=1500
 )
 
 # regular control, fuzzy reward
 register(
     id='Turtlebot-v3',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_FuzzyReward_3',
-    max_episode_steps=1500
-)
-
-# regular control, fuzzy reward
-register(
-    id='Turtlebot-v4',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_4',
-    max_episode_steps=1500
-)
-
-# regular control, fuzzy reward
-register(
-    id='Turtlebot-v5',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_5',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Constrained_Easy',
     max_episode_steps=1500
 )

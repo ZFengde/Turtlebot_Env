@@ -1,8 +1,6 @@
 # this is for connecting class from turtlebot_env.py
 
-from turtlebot_env.envs.turtlebot_env_0 import TurtleBotEnv_0
-from turtlebot_env.envs.turtlebot_env_fuzzy_1 import TurtleBotEnv_FuzzyReward_1
-from turtlebot_env.envs.turtlebot_env_2 import TurtleBotEnv_2
-from turtlebot_env.envs.turtlebot_env_fuzzy_3 import TurtleBotEnv_FuzzyReward_3
-from turtlebot_env.envs.turtlebot_env_4 import TurtleBotEnv_4
-from turtlebot_env.envs.turtlebot_env_5 import TurtleBotEnv_5
+from turtlebot_env.envs.turtlebot_navi import TurtleBotEnv_Navi
+from turtlebot_env.envs.turtlebot_navi_fuzzy import TurtleBotEnv_Navi_Fuzzy
+from turtlebot_env.envs.turtlebot_constrained import TurtleBotEnv_Constrained
+from turtlebot_env.envs.turtlebot_constrained_easy import TurtleBotEnv_Constrained_Easy

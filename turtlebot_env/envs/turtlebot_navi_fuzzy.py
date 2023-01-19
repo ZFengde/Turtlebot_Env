@@ -9,7 +9,7 @@ from turtlebot_env.resources.target import Target
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 
-class TurtleBotEnv_FuzzyReward_1(gym.Env):
+class TurtleBotEnv_Navi_Fuzzy(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation

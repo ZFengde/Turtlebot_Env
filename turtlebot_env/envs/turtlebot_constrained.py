@@ -1,4 +1,4 @@
-# v5 --- regular reward, navigation control with only 1 obstacle
+# v4 --- regular reward, navigation control with obstacles
 import gym
 import numpy as np
 import math
@@ -8,12 +8,13 @@ from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 from turtlebot_env.resources.obstacle import Obstacle
 
-class TurtleBotEnv_5(gym.Env):
+class TurtleBotEnv_Constrained(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=True):
+    def __init__(self, use_gui=False, obstacle_num=7):
         self.use_gui = use_gui
+        self.obstacle_num = obstacle_num
         if self.use_gui:
             self.client = p.connect(p.GUI)
         else:
@@ -26,8 +27,6 @@ class TurtleBotEnv_5(gym.Env):
         V = (wl+wr)/2, W = (wl - wr)/D
         '''
 
-        # here we can easily change the number of obstalces
-        self.obstacle_num = 2
         # here we should normalisation
         self.action_space = gym.spaces.box.Box(
             low=np.array([-1, -1], dtype=np.float32),
@@ -36,9 +35,11 @@ class TurtleBotEnv_5(gym.Env):
         # observation space initialisation
         # observation = xy position[1, 2], xy orientation[3, 4]
         # xy direction velocity[5, 6], target xy position[7, 8]
-        self.observation_space = gym.spaces.box.Box(
-            low=np.array([-5, -5, -1, -1, -3, -3, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5], dtype=np.float32),
-            high=np.array([5, 5, 1, 1, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], dtype=np.float32))
+        
+         # should >= 1
+        low = np.concatenate((np.array([-5, -5, -1, -1, -3, -3, -5, -5]), np.ones(self.obstacle_num) * -5, np.ones(self.obstacle_num) * -5), dtype=np.float32)
+        high = np.concatenate((np.array([5, 5, 1, 1, 3, 3, 5, 5]), np.ones(self.obstacle_num) * 5, np.ones(self.obstacle_num) * 5), dtype=np.float32)
+        self.observation_space = gym.spaces.box.Box(low=low, high=high)
         
         # this is for random initialisation, could be replaced by another method
         self.np_random, _ = gym.utils.seeding.np_random()
@@ -69,7 +70,6 @@ class TurtleBotEnv_5(gym.Env):
 
         # 1. foward reward, 2. time reward
         reward = 10 * (self.prev_dist_to_target - dist_to_target) - 1e-4 * (error_angle - 90) - 0.01
-    
         self.prev_dist_to_target = dist_to_target
         
         # 2. Done by running off boundaries penalty
@@ -84,12 +84,12 @@ class TurtleBotEnv_5(gym.Env):
             reward = 50
             self.info['Success'] = 'Yes'
 
+        self.info['cost'] = 0
         # 4. Done by collision with obstacle
         for ele in self.obstacle_bases:
             distance = np.linalg.norm(pos - ele)
             if distance < 0.3:
-                self.done = True
-                reward = -7.5
+                self.info['cost'] -= -1
 
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
@@ -111,7 +111,7 @@ class TurtleBotEnv_5(gym.Env):
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1.1, -1.1), high=(1.1, 1.1), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
         self.done = False
 
         x_target = np.random.uniform(1.3, 1.7)
@@ -130,7 +130,7 @@ class TurtleBotEnv_5(gym.Env):
         self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
                                            (turtlebot_ob[1] - self.target[1]) ** 2))
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
-        self.info = {'Success': 'No', 'Obstacles_info': self.obstacle_bases}
+        self.info = {'Success': 'No'}
 
         return obs
 
