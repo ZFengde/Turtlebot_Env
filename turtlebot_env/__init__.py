@@ -9,11 +9,11 @@ register(
     max_episode_steps=1000
 )
 
-# navigation contrl, fuzzy reward
+# regular control, fuzzy reward
 register(
     id='Turtlebot-v1',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Navi_Fuzzy',
-    max_episode_steps=1000
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Constrained_Easy',
+    max_episode_steps=1500
 )
 
 # regular control, fuzzy reward
@@ -23,9 +23,3 @@ register(
     max_episode_steps=1500
 )
 
-# regular control, fuzzy reward
-register(
-    id='Turtlebot-v3',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Constrained_Easy',
-    max_episode_steps=1500
-)
