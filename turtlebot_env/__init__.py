@@ -9,10 +9,17 @@ register(
     max_episode_steps=1000
 )
 
-# regular control, fuzzy reward
+# obstacle aviodance, with constrained problem setting
 register(
     id='Turtlebot-v1',
     entry_point='turtlebot_env.envs:TurtleBotEnv_Constrained',
+    max_episode_steps=1500
+)
+
+# obstacle aviodance, with unconstrained problem setting
+register(
+    id='Turtlebot-v2',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_UnConstrained',
     max_episode_steps=1500
 )
 
