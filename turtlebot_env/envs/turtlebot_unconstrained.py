@@ -85,11 +85,11 @@ class TurtleBotEnv_UnConstrained(gym.Env):
             self.info['Success'] = 'Yes'
 
         # 4. Done by collision with obstacle
-        for ele in self.obstacle_bases:
-            distance = np.linalg.norm(pos - ele)
-            if distance < 0.27:
-                self.done = True
-                reward = -20
+        # for ele in self.obstacle_bases:
+        #     distance = np.linalg.norm(pos - ele)
+        #     if distance < 0.27:
+        #         self.done = True
+        #         reward = -20
 
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info

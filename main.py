@@ -11,7 +11,8 @@ while True:
     while True:
         actions = env.action_space.sample()
         obs, reward, done, info = env.step(actions)
-        print(info)
+        if 'cost' in info.keys():
+            print(info['cost'])
         time.sleep(1./240.)
         if done:
             break
