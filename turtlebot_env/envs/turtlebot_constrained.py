@@ -12,7 +12,7 @@ class TurtleBotEnv_Constrained(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False, obstacle_num=7):
+    def __init__(self, use_gui=False, obstacle_num=5):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
