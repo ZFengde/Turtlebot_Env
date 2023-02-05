@@ -13,6 +13,6 @@ while True:
         obs, reward, done, info = env.step(actions)
         if 'cost' in info.keys():
             print(info['cost'])
-        time.sleep(1./240.)
+        time.sleep(1./480.)
         if done:
             break
