@@ -89,7 +89,7 @@ class TurtleBotEnv_Constrained(gym.Env):
         for ele in self.obstacle_bases:
             distance = np.linalg.norm(pos - ele)
             if distance < 0.3:
-                self.info['cost'] += 1
+                self.info['cost'] += 0.1
 
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
