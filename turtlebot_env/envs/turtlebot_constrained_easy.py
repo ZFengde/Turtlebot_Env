@@ -8,11 +8,11 @@ from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 from turtlebot_env.resources.obstacle import Obstacle
 
-class TurtleBotEnv_UnConstrained(gym.Env):
+class TurtleBotEnv_Constrained_Easy(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False, obstacle_num=5):
+    def __init__(self, use_gui=False, obstacle_num=1):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
@@ -84,12 +84,12 @@ class TurtleBotEnv_UnConstrained(gym.Env):
             reward = 50
             self.info['Success'] = 'Yes'
 
+        self.info['cost'] = 0
         # 4. Done by collision with obstacle
         for ele in self.obstacle_bases:
             distance = np.linalg.norm(pos - ele)
-            if distance < 0.27:
-                self.done = True
-                reward = -20
+            if distance < 0.3:
+                self.info['cost'] += 0.1
 
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
@@ -105,17 +105,17 @@ class TurtleBotEnv_UnConstrained(gym.Env):
         p.setGravity(0, 0, -9.8)
         # Reload the plane and car
         Plane(self.client)
-        x = -1.4
-        y = np.random.uniform(-1.5, 1.5)
+        x = -1.5
+        y = 0
         pos = [x, y, 0.03]
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1, -0.01), high=(1, 0.01), size=(self.obstacle_num, 2))
         self.done = False
 
-        x_target = np.random.uniform(1.3, 1.7)
-        y_target = np.random.uniform(-1.7, 1.7)
+        x_target = 1.5
+        y_target = 0
         # Visual element of the target
         self.target = [x_target, y_target]
         Target(self.client, self.target)
