@@ -8,11 +8,11 @@ from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 from turtlebot_env.resources.obstacle import Obstacle
 
-class TurtleBotEnv_Constrained_Easy(gym.Env):
+class TurtleBotEnv_Constrained_Reward(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False, obstacle_num=1):
+    def __init__(self, use_gui=False, obstacle_num=5):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
@@ -48,6 +48,7 @@ class TurtleBotEnv_Constrained_Easy(gym.Env):
         self.turtlebot = None
         self.target = None
         self.prev_dist_to_target = None
+        self.prev_dist_robot_obstalces = None
 
     # this is what happened in every single step
     def step(self, action):
@@ -85,12 +86,18 @@ class TurtleBotEnv_Constrained_Easy(gym.Env):
             self.info['Success'] = 'Yes'
 
         self.info['cost'] = 0
-        # 4. Done by collision with obstacle
-        for ele in self.obstacle_bases:
-            distance = np.linalg.norm(pos - ele)
-            if distance < 0.3:
-                self.info['cost'] += 0.1
 
+        # 4. Done by collision with obstacle
+        self.prev_dist_robot_obstalces
+
+        dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
+        for i in range(len(dist_robot_obstalces)):
+            if dist_robot_obstalces[i] < 0.3:
+                self.info['cost'] += 0.1
+            elif dist_robot_obstalces[i] < 0.5:
+                self.info['cost'] += 5 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i])
+
+        self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
 
@@ -105,19 +112,19 @@ class TurtleBotEnv_Constrained_Easy(gym.Env):
         p.setGravity(0, 0, -9.8)
         # Reload the plane and car
         Plane(self.client)
-        x = -1.5
-        y = 0
-        pos = [x, y, 0.03]
+        x = -1.4
+        y = np.random.uniform(-1.5, 1.5)
+        pos = np.array([x, y])
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1, -0.01), high=(1, 0.01), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
         self.done = False
 
-        x_target = 1.5
-        y_target = 0
+        x_target = np.random.uniform(1.3, 1.7)
+        y_target = np.random.uniform(-1.7, 1.7)
         # Visual element of the target
-        self.target = [x_target, y_target]
+        self.target = np.array([x_target, y_target])
         Target(self.client, self.target)
         for i in range(len(self.obstacle_bases)):
             Obstacle(self.client, self.obstacle_bases[i])
@@ -127,8 +134,9 @@ class TurtleBotEnv_Constrained_Easy(gym.Env):
 
         # this is for generating first prev_dist_to_target when initialising
         # for use in step function
-        self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
-                                           (turtlebot_ob[1] - self.target[1]) ** 2))
+        self.prev_dist_to_target = np.linalg.norm(pos - self.target)
+        self.prev_dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
+
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
         self.info = {'Success': 'No'}
 

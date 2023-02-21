@@ -19,7 +19,7 @@ register(
 # obstacle aviodance, with unconstrained problem setting
 register(
     id='Turtlebot-v2',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Constrained_Easy',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Constrained_Reward',
     max_episode_steps=2000
 )
 

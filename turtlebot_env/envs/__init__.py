@@ -2,5 +2,5 @@
 
 from turtlebot_env.envs.turtlebot_navi import TurtleBotEnv_Navi
 from turtlebot_env.envs.turtlebot_constrained import TurtleBotEnv_Constrained
-from turtlebot_env.envs.turtlebot_constrained_easy import TurtleBotEnv_Constrained_Easy
+from envs.turtlebot_constrained_reward import TurtleBotEnv_Constrained_Reward
 from turtlebot_env.envs.turtlebot_constrained_test import TurtleBotEnv_Constrained_Test
