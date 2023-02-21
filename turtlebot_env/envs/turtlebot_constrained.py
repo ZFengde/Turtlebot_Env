@@ -107,7 +107,7 @@ class TurtleBotEnv_Constrained(gym.Env):
         Plane(self.client)
         x = -1.4
         y = np.random.uniform(-1.5, 1.5)
-        pos = [x, y, 0.03]
+        pos = np.array([x, y])
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
@@ -117,7 +117,7 @@ class TurtleBotEnv_Constrained(gym.Env):
         x_target = np.random.uniform(1.3, 1.7)
         y_target = np.random.uniform(-1.7, 1.7)
         # Visual element of the target
-        self.target = [x_target, y_target]
+        self.target = np.array([x_target, y_target])
         Target(self.client, self.target)
         for i in range(len(self.obstacle_bases)):
             Obstacle(self.client, self.obstacle_bases[i])
@@ -127,8 +127,7 @@ class TurtleBotEnv_Constrained(gym.Env):
 
         # this is for generating first prev_dist_to_target when initialising
         # for use in step function
-        self.prev_dist_to_target = math.sqrt(((turtlebot_ob[0] - self.target[0]) ** 2 +
-                                           (turtlebot_ob[1] - self.target[1]) ** 2))
+        self.prev_dist_to_target = np.linalg.norm(pos - self.target)
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
         self.info = {'Success': 'No'}
 
