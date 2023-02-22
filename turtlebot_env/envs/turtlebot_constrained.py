@@ -48,6 +48,7 @@ class TurtleBotEnv_Constrained(gym.Env):
         self.turtlebot = None
         self.target = None
         self.prev_dist_to_target = None
+        self.prev_dist_robot_obstalces = None
 
     # this is what happened in every single step
     def step(self, action):
@@ -84,13 +85,17 @@ class TurtleBotEnv_Constrained(gym.Env):
             reward = 50
             self.info['Success'] = 'Yes'
 
-        self.info['cost'] = 0
         # 4. Done by collision with obstacle
-        for ele in self.obstacle_bases:
-            distance = np.linalg.norm(pos - ele)
-            if distance < 0.3:
-                self.info['cost'] += 0.1
+        self.prev_dist_robot_obstalces
 
+        # 5. Obstacles guiding reward and cost
+        self.info['cost'] = 0
+        dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
+        for i in range(len(dist_robot_obstalces)):
+            if dist_robot_obstalces[i] < 0.3:
+                self.info['cost'] += 0.1
+               
+        self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
 
@@ -128,6 +133,8 @@ class TurtleBotEnv_Constrained(gym.Env):
         # this is for generating first prev_dist_to_target when initialising
         # for use in step function
         self.prev_dist_to_target = np.linalg.norm(pos - self.target)
+        self.prev_dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
+
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
         self.info = {'Success': 'No'}
 

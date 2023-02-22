@@ -95,9 +95,8 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
             if dist_robot_obstalces[i] < 0.3:
                 self.info['cost'] += 0.1
                 reward -= 0.03
-            # elif dist_robot_obstalces[i] < 0.5:
-            #     reward -= 10 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i])
-            reward += 1e-4 * dist_robot_obstalces[i]
+            elif dist_robot_obstalces[i] < 0.5:
+                reward -= 3 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i])
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
