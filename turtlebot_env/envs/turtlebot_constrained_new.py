@@ -1,4 +1,4 @@
-# v4 --- regular reward, navigation control with obstacles
+# v4 --- obstacles avoidance environment with both reward function and cost function
 import gym
 import numpy as np
 import math
@@ -24,7 +24,11 @@ class TurtleBotEnv_Constrained_New(gym.Env):
         action space initialisation
         should be the rotation speed omiga here
         radius = 0.033, D = 0.22
-        V = (wl+wr)/2, W = (wl - wr)/D
+        v = (wl+wr)/2, w = (wl - wr)/D
+        2v = wl + wr
+        wD = wl - wr
+        wl = (2v + wD)/2
+        wr = (2v - wD)/2
         '''
 
         # here we should normalisation
@@ -52,7 +56,10 @@ class TurtleBotEnv_Constrained_New(gym.Env):
 
     # this is what happened in every single step
     def step(self, action):
-        self.turtlebot.apply_action((action + 1) * 3.25 * 5)
+        action = (action + 1) * 3.25 * 5
+        self.turtlebot.apply_action(action)
+
+        # maximum [32.5 ,32.5]
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation() 
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
@@ -85,10 +92,7 @@ class TurtleBotEnv_Constrained_New(gym.Env):
             reward = 50
             self.info['Success'] = 'Yes'
 
-        # 4. Done by collision with obstacle
-        self.prev_dist_robot_obstalces
-
-        # 5. Obstacles guiding reward and cost
+        # 4. Obstacles guiding reward and cost
         self.info['cost'] = 0
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
         for i in range(len(dist_robot_obstalces)):

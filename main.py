@@ -2,6 +2,7 @@ import gym
 import turtlebot_env
 import pybullet as p
 import time
+import numpy as np
 
 env = gym.make('Turtlebot-v2', use_gui=True) 
 
@@ -10,7 +11,7 @@ while True:
     obs = env.reset()
     returns = 0
     while True:
-        actions = env.action_space.sample()
+        actions = np.array([1, 0])
         obs, reward, done, info = env.step(actions)
         returns += reward
         # if 'cost' in info.keys():

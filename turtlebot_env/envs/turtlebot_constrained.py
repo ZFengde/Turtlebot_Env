@@ -1,4 +1,4 @@
-# v4 --- regular reward, navigation control with obstacles
+# v1 --- primary constrained environment
 import gym
 import numpy as np
 import math

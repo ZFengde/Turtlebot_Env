@@ -1,4 +1,4 @@
-# v4 --- regular reward, navigation control with obstacles
+# v3 --- obstacles avoidance environment with reward function
 import gym
 import numpy as np
 import math
@@ -52,7 +52,16 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
 
     # this is what happened in every single step
     def step(self, action):
-        self.turtlebot.apply_action((action + 1) * 3.25 * 5)
+          
+        # originally, action = [wl, wr]
+        # TEST, here we try if action is (v, w)
+        diameter = 0.22 
+        wl = (2 * action[0] + action[1] * diameter)/2
+        wr = (2 * action[0] - action[1] * diameter)/2
+
+        action = (np.array([wl, wr])) * 3.25 * 10
+        # maximum [32.5, 32.5]
+        self.turtlebot.apply_action(action)
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation() 
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
@@ -70,7 +79,7 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
-        reward = 10 * (self.prev_dist_to_target - dist_to_target) - 1e-4 * (error_angle - 90) - 0.01
+        reward = 20 * (self.prev_dist_to_target - dist_to_target) / (dist_to_target + 1e-7) - 1e-4 * (error_angle - 90) - 0.01
         self.prev_dist_to_target = dist_to_target
         
         # 2. Done by running off boundaries penalty
@@ -85,10 +94,7 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
             reward = 50
             self.info['Success'] = 'Yes'
 
-        # 4. Done by collision with obstacle
-        self.prev_dist_robot_obstalces
-
-        # 5. Obstacles guiding reward and cost
+        # 4. Obstacles guiding reward and cost
         self.info['cost'] = 0
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
         for i in range(len(dist_robot_obstalces)):
@@ -96,7 +102,7 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
                 self.info['cost'] += 0.1
                 reward -= 0.15
             elif dist_robot_obstalces[i] < 0.5:
-                reward -= 3 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i])
+                reward -= 3 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i]) / (dist_robot_obstalces[i] + 1e-7)
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
