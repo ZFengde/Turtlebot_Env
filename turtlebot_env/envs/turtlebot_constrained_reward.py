@@ -55,15 +55,18 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
     # this is what happened in every single step
     def step(self, action):
           
-        # originally, action = [wl, wr]
-        # TEST, here we try if action is (v, w)
-        diameter = 0.22 
-        wl = (2 * action[0] + action[1] * diameter)/2
-        wr = (2 * action[0] - action[1] * diameter)/2
+        # TODO, different action taken, but not too different
+        # # originally, action = [wl, wr]
+        # # TEST, here we try if action is (v, w)
+        # diameter = 0.22 
+        # wl = (2 * action[0] + action[1] * diameter)/2
+        # wr = (2 * action[0] - action[1] * diameter)/2
+        # action = (np.array([wl, wr])) * 3.25 * 10
+        # # maximum [32.5, 32.5]
+        # self.turtlebot.apply_action(action)
 
-        action = (np.array([wl, wr])) * 3.25 * 10
-        # maximum [32.5, 32.5]
-        self.turtlebot.apply_action(action)
+        self.turtlebot.apply_action((action + 1) * 3.25 * 5)
+
         p.stepSimulation()
         turtlebot_ob = self.turtlebot.get_observation() 
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))

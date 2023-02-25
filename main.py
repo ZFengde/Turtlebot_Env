@@ -11,7 +11,7 @@ while True:
     obs = env.reset()
     returns = 0
     while True:
-        actions = np.array([1, 0])
+        actions = np.array([1, 1])
         obs, reward, done, info = env.step(actions)
         returns += reward
         # if 'cost' in info.keys():
