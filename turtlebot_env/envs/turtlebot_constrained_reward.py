@@ -104,7 +104,7 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
         for i in range(len(dist_robot_obstalces)):
             if dist_robot_obstalces[i] < 0.3:
-                self.info['cost'] += 0.15
+                self.info['cost'] += 0.1
             elif dist_robot_obstalces[i] < 0.5:
                 reward -= 10 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i]) / (dist_robot_obstalces[i] + 1e-7)
 
