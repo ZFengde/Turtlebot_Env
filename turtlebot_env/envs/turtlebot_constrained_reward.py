@@ -84,7 +84,8 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
-        reward = 20 * (self.prev_dist_to_target - dist_to_target) / (dist_to_target + 1e-7) - 1e-4 * (error_angle - 90) - 0.01
+        # reward = 20 * (self.prev_dist_to_target - dist_to_target) / (dist_to_target + 1e-7) - 1e-4 * (error_angle - 90) - 0.01
+        reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
         self.prev_dist_to_target = dist_to_target
         
         # 2. Done by running off boundaries penalty
@@ -108,9 +109,9 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
                 self.info['cost'] += 0.15
                 # reward = -30
                 # self.done = True
-            if dist_robot_obstalces[i] < 0.5:
-                # reward -= 40 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i]) / (dist_robot_obstalces[i] + 1e-7)
-                self.info['cost'] += 40 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i]) / (dist_robot_obstalces[i] + 1e-7)
+            if dist_robot_obstalces[i] < 0.45:
+                reward -= 40 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i])
+                # self.info['cost'] += 40 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i]) 
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
