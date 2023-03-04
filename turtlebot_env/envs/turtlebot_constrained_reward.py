@@ -171,6 +171,7 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
             return 0
         else:
             vector_dot_product = np.dot(v1, v2)
-            arccos = math.acos(vector_dot_product / (np.linalg.norm(v1) * np.linalg.norm(v2)))
+            cos_value = np.clip(vector_dot_product / (np.linalg.norm(v1) * np.linalg.norm(v2)), -1, 1)
+            arccos = math.acos(cos_value)
             angle = np.degrees(arccos)
             return angle
