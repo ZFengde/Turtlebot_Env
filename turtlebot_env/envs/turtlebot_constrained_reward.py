@@ -1,4 +1,4 @@
-# v3 --- obstacles avoidance environment with reward function
+# v2 --- obstacles avoidance environment with reward function
 import gym
 import numpy as np
 import math
@@ -84,8 +84,8 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
-        # reward = 20 * (self.prev_dist_to_target - dist_to_target) / (dist_to_target + 1e-7) - 1e-4 * (error_angle - 90) - 0.01
-        reward = 20 * (self.prev_dist_to_target - dist_to_target) - 1e-4 * (error_angle - 90) - 0.01
+        # reward = 20 * (self.prev_dist_to_target - dist_to_target) - 1e-4 * (error_angle - 90) - 0.01
+        reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
         self.prev_dist_to_target = dist_to_target
         
         # 2. Done by running off boundaries penalty
@@ -105,13 +105,11 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
         
         for i in range(len(dist_robot_obstalces)):
-            if dist_robot_obstalces[i] < 0.3:
-                self.info['cost'] += 0.15
-                # reward = -30
-                # self.done = True
-            # if dist_robot_obstalces[i] < 0.45:
-            #     # reward -= 40 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i])
-            #     self.info['cost'] += 20 * (dist_robot_obstalces[i] - self.prev_dist_robot_obstalces[i]) 
+            if dist_robot_obstalces[i] < 0.27:
+                self.info['cost'] += 0.15 # only work as indicator
+                reward = -0.15
+            if dist_robot_obstalces[i] < 0.4:
+                reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]

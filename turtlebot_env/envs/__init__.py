@@ -3,4 +3,4 @@
 from turtlebot_env.envs.turtlebot_navi import TurtleBotEnv_Navi
 from turtlebot_env.envs.turtlebot_constrained import TurtleBotEnv_Constrained
 from turtlebot_env.envs.turtlebot_constrained_reward import TurtleBotEnv_Constrained_Reward
-from turtlebot_env.envs.turtlebot_constrained_new import TurtleBotEnv_Constrained_New
+from turtlebot_env.envs.turtlebot_exp import TurtleBotEnv_Experiment
