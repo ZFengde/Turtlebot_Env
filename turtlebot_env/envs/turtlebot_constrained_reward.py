@@ -84,7 +84,6 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
 
         # 1. foward reward, 2. time reward
-        # reward = 20 * (self.prev_dist_to_target - dist_to_target) - 1e-4 * (error_angle - 90) - 0.01
         reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
         self.prev_dist_to_target = dist_to_target
         
@@ -108,7 +107,7 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
             if dist_robot_obstalces[i] < 0.27:
                 self.info['cost'] += 0.15 # only work as indicator
                 reward = -0.15
-            if dist_robot_obstalces[i] < 0.4:
+            if dist_robot_obstalces[i] < 0.6:
                 reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces

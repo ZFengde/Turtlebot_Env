@@ -95,12 +95,13 @@ class TurtleBotEnv_Experiment(gym.Env):
         # 4. Obstacles guiding reward and cost
         self.info['cost'] = 0
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
+
         for i in range(len(dist_robot_obstalces)):
-            if dist_robot_obstalces[i] < 0.3:
+            if dist_robot_obstalces[i] < 0.27:
                 self.done = True
                 reward = -30
                 self.info['Success'] = 'No'
-            if dist_robot_obstalces[i] < 0.4:
+            if dist_robot_obstalces[i] < 0.6:
                 reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces
