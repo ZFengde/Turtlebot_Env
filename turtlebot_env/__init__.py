@@ -19,14 +19,21 @@ register(
 # obstacle aviodance, non-terminated collision pure reward
 register(
     id='Turtlebot-v2',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Constrained_Reward',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Reward_Nonterminal',
     max_episode_steps=2000
 )
 
 # obstacle aviodance, experimental setting, terminated collision pure reward
 register(
     id='Turtlebot-v3',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Experiment',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Reward_Terminal',
+    max_episode_steps=2000
+)
+
+# obstacle environment based on artifical potential field method
+register(
+    id='Turtlebot-v4',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_APF',
     max_episode_steps=2000
 )
 

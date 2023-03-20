@@ -8,7 +8,7 @@ from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 from turtlebot_env.resources.obstacle import Obstacle
 
-class TurtleBotEnv_Experiment(gym.Env):
+class TurtleBotEnv_Reward_Terminal(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation

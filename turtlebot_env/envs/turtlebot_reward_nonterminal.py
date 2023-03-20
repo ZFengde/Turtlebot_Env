@@ -8,7 +8,7 @@ from turtlebot_env.resources.plane import Plane
 from turtlebot_env.resources.target import Target
 from turtlebot_env.resources.obstacle import Obstacle
 
-class TurtleBotEnv_Constrained_Reward(gym.Env):
+class TurtleBotEnv_Reward_Nonterminal(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
@@ -72,12 +72,7 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
 
         pos = obs[:2]
-        ori = obs[2: 4]
-        vel = obs[4: 6]
         target = obs[6: 8]
-        alpha = target - pos
-        beta = vel + ori
-        error_angle = self.angle(alpha, beta)
 
         # step reward setting, compute L2 distance firstly
         # dist_to_obstacles = 
@@ -85,6 +80,8 @@ class TurtleBotEnv_Constrained_Reward(gym.Env):
 
         # 1. foward reward, 2. time reward
         reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
+        self.info['target_reward'] = reward
+
         self.prev_dist_to_target = dist_to_target
         
         # 2. Done by running off boundaries penalty

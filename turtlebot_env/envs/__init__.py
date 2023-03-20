@@ -2,5 +2,6 @@
 
 from turtlebot_env.envs.turtlebot_navi import TurtleBotEnv_Navi
 from turtlebot_env.envs.turtlebot_constrained import TurtleBotEnv_Constrained
-from turtlebot_env.envs.turtlebot_constrained_reward import TurtleBotEnv_Constrained_Reward
-from turtlebot_env.envs.turtlebot_exp import TurtleBotEnv_Experiment
+from turtlebot_env.envs.turtlebot_reward_nonterminal import TurtleBotEnv_Reward_Nonterminal
+from turtlebot_env.envs.turtlebot_reward_terminal import TurtleBotEnv_Reward_Terminal
+from turtlebot_env.envs.turtlebot_apf import TurtleBotEnv_APF
