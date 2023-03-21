@@ -1,4 +1,5 @@
 # v3 --- terminated reward
+# specific only for test
 import gym
 import numpy as np
 import math
@@ -125,7 +126,7 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-2, -2), high=(2, 2), size=(self.obstacle_num, 2))
         self.done = False
 
         x_target = np.random.uniform(1.3, 1.7)
