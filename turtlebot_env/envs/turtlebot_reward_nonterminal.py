@@ -12,7 +12,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False, obstacle_num=5):
+    def __init__(self, use_gui=False, obstacle_num=4):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
@@ -42,15 +42,13 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         self.observation_space = gym.spaces.box.Box(low=low, high=high)
         
         # this is for random initialisation, could be replaced by another method
-        self.np_random, _ = gym.utils.seeding.np_random()
+        # self.np_random, _ = gym.utils.seeding.np_random()
 
         # placeholders
         self.turtlebot = None
         self.target = None
         self.prev_dist_to_target = None
         self.prev_dist_robot_obstalces = None
-
-        # self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
 
     # this is what happened in every single step
     def step(self, action):
@@ -80,7 +78,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
 
         # 1. foward reward, 2. time reward
         reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
-        self.info['target_reward'] = reward
+        # self.info['target_reward'] = reward
 
         self.prev_dist_to_target = dist_to_target
         
@@ -94,7 +92,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         elif dist_to_target < 0.15:
             self.done = True
             reward = 50
-            self.info['Success'] = 'Yes'
+            self.info['Success'] = True
 
         # 4. Obstacles guiding reward and cost
         self.info['cost'] = 0
@@ -104,18 +102,18 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
             if dist_robot_obstalces[i] < 0.27:
                 self.info['cost'] += 0.15 # only work as indicator
                 reward = -0.15
+                self.info['Collision'] = True
             if dist_robot_obstalces[i] < 0.6:
                 reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
-
-    # this is for generating random seeds for training
+    
     def seed(self, seed=None):
-        self.np_random, seed = gym.utils.seeding.np_random(seed)
+        np.random.seed(seed)
         return [seed]
-
+    
     # this is reset function for initialising each episode
     def reset(self):
         p.resetSimulation(self.client)
@@ -148,7 +146,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         self.prev_dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
 
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
-        self.info = {'Success': 'No'}
+        self.info = {'Success': False, 'Collision': False}
 
         return obs
 
