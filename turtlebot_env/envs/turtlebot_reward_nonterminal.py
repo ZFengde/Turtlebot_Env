@@ -93,8 +93,10 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
                 self.info['cost'] += 0.15 # only work as indicator
                 reward = -0.15
                 self.info['Collision'] = True
-            if dist_robot_obstalces[i] < 0.45:
+            elif dist_robot_obstalces[i] < 0.45:
                 reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
+            elif dist_robot_obstalces[i] < 0.6:
+                reward -= 20 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
@@ -110,8 +112,8 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         p.setGravity(0, 0, -9.8)
         # Reload the plane and car
         Plane(self.client)
-        x = -1.4
-        y = np.random.uniform(-1.5, 1.5)
+        x = -1.7
+        y = np.random.uniform(-1.7, 1.7)
         pos = np.array([x, y])
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
@@ -122,7 +124,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         self.target = np.array([x_target, y_target])
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1.4, -1.4), high=(1.4, 1.4), size=(self.obstacle_num, 2))
 
         self.done = False
         Target(self.client, self.target)

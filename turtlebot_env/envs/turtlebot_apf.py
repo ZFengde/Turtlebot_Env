@@ -12,7 +12,7 @@ class TurtleBotEnv_APF(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False, obstacle_num=5):
+    def __init__(self, use_gui=False, obstacle_num=11):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
@@ -88,7 +88,8 @@ class TurtleBotEnv_APF(gym.Env):
         
         for i in range(len(dist_robot_obstalces)):
             if dist_robot_obstalces[i] < 0.27:
-                self.info['cost'] += 0.15 # only work as indicator
+                self.done = True
+                # self.info['cost'] += 0.15 # only work as indicator
                 
         reward = None
         return obs, reward, self.done, self.info
@@ -104,13 +105,13 @@ class TurtleBotEnv_APF(gym.Env):
         p.setGravity(0, 0, -9.8)
         # Reload the plane and car
         Plane(self.client)
-        x = -1.4
-        y = np.random.uniform(-1.5, 1.5)
+        x = -1.7
+        y = np.random.uniform(-1.7, 1.7)
         pos = np.array([x, y])
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
         self.done = False
 
         x_target = np.random.uniform(1.3, 1.7)
@@ -178,8 +179,8 @@ class TurtleBotEnv_APF(gym.Env):
         theta_f = np.arctan2(f_total[1], f_total[0])
         theta = np.arctan2(vel[1], vel[0])
         # v = (f_total[1] * np.cos(theta) +  f_total[0] + np.sin(theta)) * 3
-        v = 17.5
-        w = (-theta_f + theta) * 45 # w positive, turn right, w negative turn left
+        v = 20
+        w = (-theta_f + theta) * 50 # w positive, turn right, w negative turn left
 
         '''
         action space initialisation
