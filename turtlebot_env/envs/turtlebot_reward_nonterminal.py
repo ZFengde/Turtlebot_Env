@@ -12,7 +12,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False, obstacle_num=4):
+    def __init__(self, use_gui=False, obstacle_num=7):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
@@ -115,14 +115,16 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         pos = np.array([x, y])
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
-        # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-2, -2), high=(2, 2), size=(self.obstacle_num, 2))
-        self.done = False
-
         x_target = np.random.uniform(1.3, 1.7)
         y_target = np.random.uniform(-1.7, 1.7)
+
         # Visual element of the target
         self.target = np.array([x_target, y_target])
+
+        # self.target is the base position of the target
+        self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
+
+        self.done = False
         Target(self.client, self.target)
         for i in range(len(self.obstacle_bases)):
             Obstacle(self.client, self.obstacle_bases[i])
