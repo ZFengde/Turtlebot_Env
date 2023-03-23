@@ -93,7 +93,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
                 self.info['cost'] += 0.15 # only work as indicator
                 reward = -0.3
                 self.info['Collision'] = True
-            elif dist_robot_obstalces[i] < 0.5 and (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i]) > 0:
+            elif dist_robot_obstalces[i] < 0.5:
                 reward -= 20 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i]) / dist_robot_obstalces[i]
 
         self.prev_dist_robot_obstalces = dist_robot_obstalces
