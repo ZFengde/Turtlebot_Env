@@ -59,40 +59,28 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
         pos = obs[:2]
         target = obs[6: 8]
 
-        # step reward setting, compute L2 distance firstly
-        # dist_to_obstacles = 
         dist_to_target = np.linalg.norm(pos - target)
-
-        # 1. foward reward, 2. time reward
-        reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
-        # self.info['target_reward'] = reward
-
-        self.prev_dist_to_target = dist_to_target
-        
-        # 2. Done by running off boundaries penalty
-        if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
-                turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
-            self.done = True
-            reward = -10
-
-        # 3. Done by reaching target reward
-        elif dist_to_target < 0.15:
-            self.done = True
-            reward = 50
-            self.info['Success'] = True
-
-        # 4. Obstacles guiding reward and cost
-        self.info['cost'] = 0
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
         
+        reward = -1
+        # terminate mode
+        if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
+            turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
+            self.done = True
+            reward = -200
+
+        elif dist_to_target < 0.15:
+            self.done = True
+            reward = 1000
+            self.info['Success'] = True
+
         for i in range(len(dist_robot_obstalces)):
             if dist_robot_obstalces[i] < 0.27:
-                reward = -30
+                reward = -1000
                 self.info['Collision'] = True
                 self.done = True
-            elif dist_robot_obstalces[i] < 0.5:
-                reward -= 60 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
+        self.prev_dist_to_target = dist_to_target
         self.prev_dist_robot_obstalces = dist_robot_obstalces
         # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
