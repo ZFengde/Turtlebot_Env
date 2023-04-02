@@ -70,10 +70,10 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
             turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
             self.done = True
-            reward -= 10
+            reward -= 20
         elif dist_to_target < 0.15:
             self.done = True
-            reward += 50
+            reward += 70
             self.info['Success'] = True
 
         if not self.done:
