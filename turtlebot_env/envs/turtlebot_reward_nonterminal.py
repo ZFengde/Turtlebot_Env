@@ -70,10 +70,10 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
             turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
             self.done = True
-            reward -= 30
+            reward -= 10
         elif dist_to_target < 0.15:
             self.done = True
-            reward += 100
+            reward += 50
             self.info['Success'] = True
 
         if not self.done:
@@ -81,11 +81,12 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
             # penalty mode
                 for i in range(len(dist_robot_obstalces)):
                     if dist_robot_obstalces[i] < 0.27:
-                        reward -= 0.50
+                        reward -= 0.20
                         self.info['Collision'] = True
                     elif dist_robot_obstalces[i] < 0.5:
                         reward -= 50 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
+            # reward mode
             else:
                 reward += 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
 
