@@ -52,7 +52,6 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
 
     # this is what happened in every single step
     def step(self, action):
-          
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
 
         p.stepSimulation()
@@ -64,36 +63,27 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
 
         dist_to_target = np.linalg.norm(pos - target)
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
+
+        reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
         
-        reward = 0
-        # terminate mode
         if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
-            turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
+                turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
             self.done = True
-            reward -= 20
+            reward = -10
+
         elif dist_to_target < 0.15:
             self.done = True
-            reward += 70
+            reward = 50
             self.info['Success'] = True
 
-        if not self.done:
-            if min(dist_robot_obstalces) < 0.5:
-            # penalty mode
-                for i in range(len(dist_robot_obstalces)):
-                    if dist_robot_obstalces[i] < 0.27:
-                        reward -= 0.50
-                        self.info['Collision'] = True
-                    elif dist_robot_obstalces[i] < 0.5:
-                        # reward += 50 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
-                        reward += 0
-
-            # reward mode
-            else:
-                reward += 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
+        for i in range(len(dist_robot_obstalces)):
+            if dist_robot_obstalces[i] < 0.27:
+                reward = -0.15
+            if dist_robot_obstalces[i] < 0.6:
+                reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_to_target = dist_to_target
         self.prev_dist_robot_obstalces = dist_robot_obstalces
-        # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
     
     def seed(self, seed=None):

@@ -41,6 +41,9 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
         high = np.concatenate((np.array([5, 5, 1, 1, 3, 3, 5, 5]), np.ones(self.obstacle_num) * 5, np.ones(self.obstacle_num) * 5), dtype=np.float32)
         self.observation_space = gym.spaces.box.Box(low=low, high=high)
         
+        # this is for random initialisation, could be replaced by another method
+        # self.np_random, _ = gym.utils.seeding.np_random()
+
         # placeholders
         self.turtlebot = None
         self.target = None
@@ -62,23 +65,30 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
         
-        reward = -1
+        reward = 0
         # terminate mode
         if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
             turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
             self.done = True
-            reward = -200
-
+            reward -= 20
         elif dist_to_target < 0.15:
             self.done = True
-            reward = 1000
+            reward += 70
             self.info['Success'] = True
 
-        for i in range(len(dist_robot_obstalces)):
-            if dist_robot_obstalces[i] < 0.27:
-                reward = -1000
-                self.info['Collision'] = True
-                self.done = True
+        if not self.done:
+            if min(dist_robot_obstalces) < 0.5:
+            # penalty mode
+                for i in range(len(dist_robot_obstalces)):
+                    if dist_robot_obstalces[i] < 0.27:
+                        reward -= 0.50
+                        self.info['Collision'] = True
+                    elif dist_robot_obstalces[i] < 0.5:
+                        # reward += 50 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
+                        reward += 0
+            # reward mode
+            else:
+                reward += 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
 
         self.prev_dist_to_target = dist_to_target
         self.prev_dist_robot_obstalces = dist_robot_obstalces

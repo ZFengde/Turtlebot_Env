@@ -47,7 +47,6 @@ class TurtleBotEnv_APF(gym.Env):
         # placeholders
         self.turtlebot = None
         self.target = None
-        self.prev_dist_target = None
         self.prev_dist_robot_obstalces = None
 
         self.radius_target = 0.05
@@ -67,31 +66,40 @@ class TurtleBotEnv_APF(gym.Env):
 
         turtlebot_ob = self.turtlebot.get_observation() 
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
+
         pos = obs[:2]
         target = obs[6: 8]
-        dist_target = np.linalg.norm(pos - target)
 
-        self.info['target_reward'] = 20 * (self.prev_dist_target - dist_target) - 0.01
-        self.prev_dist_target = dist_target
-
-        # determine if the episode should be end
-        if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
-                turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
-            self.done = True
-            
-        elif dist_target< 0.15:
-            self.done = True
-            self.info['Success'] = 'Yes'
-        
-        self.info['cost'] = 0
+        dist_to_target = np.linalg.norm(pos - target)
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
         
-        for i in range(len(dist_robot_obstalces)):
-            if dist_robot_obstalces[i] < 0.27:
-                self.done = True
-                # self.info['cost'] += 0.15 # only work as indicator
-                
-        reward = None
+        reward = 0
+        # terminate mode
+        if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
+            turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
+            self.done = True
+            reward -= 20
+        elif dist_to_target < 0.15:
+            self.done = True
+            reward += 70
+            self.info['Success'] = True
+
+        if not self.done:
+            if min(dist_robot_obstalces) < 0.5:
+            # penalty mode
+                for i in range(len(dist_robot_obstalces)):
+                    if dist_robot_obstalces[i] < 0.27:
+                        reward -= 0.50
+                        self.info['Collision'] = True
+                    elif dist_robot_obstalces[i] < 0.5:
+                        # reward += 50 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
+                        reward += 0
+            # reward mode
+            else:
+                reward += 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
+
+        self.prev_dist_to_target = dist_to_target
+        self.prev_dist_robot_obstalces = dist_robot_obstalces
         return obs, reward, self.done, self.info
 
     # this is for generating random seeds for training
@@ -124,8 +132,9 @@ class TurtleBotEnv_APF(gym.Env):
 
         # Get observation to return
         turtlebot_ob = self.turtlebot.get_observation()
-        self.prev_dist_target = np.linalg.norm(pos - self.target)
 
+        self.prev_dist_to_target = np.linalg.norm(pos - self.target)
+        self.prev_dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
         self.info = {'Success': 'No'}
 
