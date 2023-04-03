@@ -109,7 +109,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         self.target = np.array([x_target, y_target])
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1, -1), high=(1, 1), size=(self.obstacle_num, 2))
 
         self.done = False
         Target(self.client, self.target)
