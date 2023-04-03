@@ -12,7 +12,7 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False, obstacle_num=7):
+    def __init__(self, use_gui=False, obstacle_num=5):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
@@ -35,8 +35,8 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
         # observation space initialisation
         # observation = xy position[1, 2], xy orientation[3, 4]
         # xy direction velocity[5, 6], target xy position[7, 8]
-        
-         # should >= 1
+        # should >= 1
+
         low = np.concatenate((np.array([-5, -5, -1, -1, -3, -3, -5, -5]), np.ones(self.obstacle_num) * -5, np.ones(self.obstacle_num) * -5), dtype=np.float32)
         high = np.concatenate((np.array([5, 5, 1, 1, 3, 3, 5, 5]), np.ones(self.obstacle_num) * 5, np.ones(self.obstacle_num) * 5), dtype=np.float32)
         self.observation_space = gym.spaces.box.Box(low=low, high=high)
@@ -52,7 +52,6 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
 
     # this is what happened in every single step
     def step(self, action):
-          
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
 
         p.stepSimulation()
@@ -64,35 +63,28 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
 
         dist_to_target = np.linalg.norm(pos - target)
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
+
+        reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
         
-        reward = 0
-        # terminate mode
         if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
-            turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
+                turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
             self.done = True
-            reward -= 20
+            reward = -10
+
         elif dist_to_target < 0.15:
             self.done = True
-            reward += 70
+            reward = 50
             self.info['Success'] = True
 
-        if not self.done:
-            if min(dist_robot_obstalces) < 0.5:
-            # penalty mode
-                for i in range(len(dist_robot_obstalces)):
-                    if dist_robot_obstalces[i] < 0.27:
-                        reward -= 0.50
-                        self.info['Collision'] = True
-                    elif dist_robot_obstalces[i] < 0.5:
-                        # reward += 50 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
-                        reward += 0
-            # reward mode
-            else:
-                reward += 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
+        for i in range(len(dist_robot_obstalces)):
+            if dist_robot_obstalces[i] < 0.27:
+                reward = -0.15
+                self.info['Collision'] = True
+            if dist_robot_obstalces[i] < 0.6:
+                reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_to_target = dist_to_target
         self.prev_dist_robot_obstalces = dist_robot_obstalces
-        # obs: robot [: 6], target [6: 8], obstacles [8: ]
         return obs, reward, self.done, self.info
     
     def seed(self, seed=None):
@@ -115,9 +107,9 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
 
         # Visual element of the target
         self.target = np.array([x_target, y_target])
-
+        self.obstacle_num = np.random.randint(3, 11)
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1, -1), high=(1, 1), size=(self.obstacle_num, 2))
 
         self.done = False
         Target(self.client, self.target)
