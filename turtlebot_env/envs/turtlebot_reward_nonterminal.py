@@ -97,19 +97,19 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         p.setGravity(0, 0, -9.8)
         # Reload the plane and car
         Plane(self.client)
-        x = -1.7
-        y = np.random.uniform(-1.7, 1.7)
+        x = -1.4
+        y = np.random.uniform(-1.5, 1.5)
         pos = np.array([x, y])
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
-        x_target = 1.7
+        x_target = np.random.uniform(1.3, 1.7)
         y_target = np.random.uniform(-1.7, 1.7)
 
         # Visual element of the target
         self.target = np.array([x_target, y_target])
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1, -1), high=(1, 1), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
 
         self.done = False
         Target(self.client, self.target)
