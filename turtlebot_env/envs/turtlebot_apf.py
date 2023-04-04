@@ -119,7 +119,7 @@ class TurtleBotEnv_APF(gym.Env):
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1.5, -1.5), high=(1.5, 1.5), size=(self.obstacle_num, 2))
         self.done = False
 
         x_target = 1.7
