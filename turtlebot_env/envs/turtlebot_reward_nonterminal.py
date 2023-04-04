@@ -78,11 +78,11 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
 
         for i in range(len(dist_robot_obstalces)):
             if dist_robot_obstalces[i] < 0.27:
-                reward = -0.5
+                reward = -0.4
                 self.info['Collision'] = True
-            if dist_robot_obstalces[i] < 0.4:
+            elif dist_robot_obstalces[i] < 0.4:
                 reward -= 60 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
-            if dist_robot_obstalces[i] < 0.6:
+            elif dist_robot_obstalces[i] < 0.6:
                 reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_to_target = dist_to_target
