@@ -1,4 +1,4 @@
-# v3 --- obstacles avoidance environment with reward function
+# v2 --- obstacles avoidance environment with reward function
 import gym
 import numpy as np
 import math
@@ -12,7 +12,7 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
     metadata = {'render.modes': ['human']}
 
     # this is for gym environment initialisation
-    def __init__(self, use_gui=False, obstacle_num=5):
+    def __init__(self, use_gui=False, obstacle_num=7):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
@@ -35,8 +35,8 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
         # observation space initialisation
         # observation = xy position[1, 2], xy orientation[3, 4]
         # xy direction velocity[5, 6], target xy position[7, 8]
-        # should >= 1
-
+        
+         # should >= 1
         low = np.concatenate((np.array([-5, -5, -1, -1, -3, -3, -5, -5]), np.ones(self.obstacle_num) * -5, np.ones(self.obstacle_num) * -5), dtype=np.float32)
         high = np.concatenate((np.array([5, 5, 1, 1, 3, 3, 5, 5]), np.ones(self.obstacle_num) * 5, np.ones(self.obstacle_num) * 5), dtype=np.float32)
         self.observation_space = gym.spaces.box.Box(low=low, high=high)
@@ -64,8 +64,8 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
 
-        reward = 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
-        
+        reward = 30 * (self.prev_dist_to_target - dist_to_target) - 0.01
+
         if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
                 turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
             self.done = True
@@ -78,10 +78,9 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
 
         for i in range(len(dist_robot_obstalces)):
             if dist_robot_obstalces[i] < 0.27:
-                reward = -0.15
+                reward = -50
                 self.info['Collision'] = True
-            if dist_robot_obstalces[i] < 0.6:
-                reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
+                self.done = True
 
         self.prev_dist_to_target = dist_to_target
         self.prev_dist_robot_obstalces = dist_robot_obstalces
@@ -107,9 +106,9 @@ class TurtleBotEnv_Reward_Terminal(gym.Env):
 
         # Visual element of the target
         self.target = np.array([x_target, y_target])
-        self.obstacle_num = np.random.randint(3, 11)
+
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1, -1), high=(1, 1), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1.5, -1.5), high=(1.5, 1.5), size=(self.obstacle_num, 2))
 
         self.done = False
         Target(self.client, self.target)
