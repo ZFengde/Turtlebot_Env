@@ -64,7 +64,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
 
-        reward = 100 * (self.prev_dist_to_target - dist_to_target)
+        reward = 20 * (self.prev_dist_to_target - dist_to_target) -0.01
         
         if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
                 turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
@@ -78,9 +78,9 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
 
         for i in range(len(dist_robot_obstalces)):
             if dist_robot_obstalces[i] < 0.27:
-                reward = -50
+                reward -= 0.2
                 self.info['Collision'] = True
-                self.done = True
+                # self.done = True
 
         self.prev_dist_to_target = dist_to_target
         self.prev_dist_robot_obstalces = dist_robot_obstalces
@@ -108,7 +108,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         self.target = np.array([x_target, y_target])
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1.5, -1.5), high=(1.5, 1.5), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
 
         self.done = False
         Target(self.client, self.target)
