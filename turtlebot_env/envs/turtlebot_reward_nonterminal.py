@@ -11,7 +11,6 @@ from turtlebot_env.resources.obstacle import Obstacle
 class TurtleBotEnv_Reward_Nonterminal(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    # this is for gym environment initialisation
     def __init__(self, use_gui=False, obstacle_num=7):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
@@ -36,21 +35,16 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         # observation = xy position[1, 2], xy orientation[3, 4]
         # xy direction velocity[5, 6], target xy position[7, 8]
         
-         # should >= 1
         low = np.concatenate((np.array([-5, -5, -1, -1, -3, -3, -5, -5]), np.ones(self.obstacle_num) * -5, np.ones(self.obstacle_num) * -5), dtype=np.float32)
         high = np.concatenate((np.array([5, 5, 1, 1, 3, 3, 5, 5]), np.ones(self.obstacle_num) * 5, np.ones(self.obstacle_num) * 5), dtype=np.float32)
         self.observation_space = gym.spaces.box.Box(low=low, high=high)
         
-        # this is for random initialisation, could be replaced by another method
-        # self.np_random, _ = gym.utils.seeding.np_random()
-
         # placeholders
         self.turtlebot = None
         self.target = None
         self.prev_dist_to_target = None
         self.prev_dist_robot_obstalces = None
 
-    # this is what happened in every single step
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
 
@@ -91,11 +85,9 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         np.random.seed(seed)
         return [seed]
     
-    # this is reset function for initialising each episode
     def reset(self):
         p.resetSimulation(self.client)
         p.setGravity(0, 0, -9.8)
-        # Reload the plane and car
         Plane(self.client)
         x = -1.7
         y = np.random.uniform(-1.7, 1.7)
@@ -105,10 +97,8 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         x_target = 1.7
         y_target = np.random.uniform(-1.7, 1.7)
 
-        # Visual element of the target
         self.target = np.array([x_target, y_target])
 
-        # self.target is the base position of the target
         self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
 
         self.done = False
@@ -116,11 +106,8 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
         for i in range(len(self.obstacle_bases)):
             Obstacle(self.client, self.obstacle_bases[i])
 
-        # Get observation to return
         turtlebot_ob = self.turtlebot.get_observation()
 
-        # this is for generating first prev_dist_to_target when initialising
-        # for use in step function
         self.prev_dist_to_target = np.linalg.norm(pos - self.target)
         self.prev_dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
 
@@ -129,11 +116,9 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
 
         return obs
 
-    # this is render function for enable GUI display
     def render(self, mode='human'):
         pass
 
-    # for shut down and disconnect physical client/server
     def close(self):
         p.disconnect(self.client)
 

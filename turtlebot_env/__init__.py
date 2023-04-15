@@ -26,7 +26,7 @@ register(
 # obstacle aviodance, experimental setting, terminated collision pure reward
 register(
     id='Turtlebot-v3',
-    entry_point='turtlebot_env.envs:TurtleBotEnv_Reward_Terminal',
+    entry_point='turtlebot_env.envs:TurtleBotEnv_Reward_Test',
     max_episode_steps=2000
 )
 
