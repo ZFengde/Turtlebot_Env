@@ -63,7 +63,6 @@ class TurtleBotEnv_APF(gym.Env):
 
         self.turtlebot.apply_action(action)
         p.stepSimulation()
-
         turtlebot_ob = self.turtlebot.get_observation() 
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
 
@@ -72,31 +71,26 @@ class TurtleBotEnv_APF(gym.Env):
 
         dist_to_target = np.linalg.norm(pos - target)
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
+
+        reward = 20 * (self.prev_dist_to_target - dist_to_target) -0.01
         
-        reward = 0
-        # terminate mode
-        if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
-            turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
+        if (turtlebot_ob[0] >= 2.2 or turtlebot_ob[0] <= -2.2 or
+                turtlebot_ob[1] >= 2.2 or turtlebot_ob[1] <= -2.2):
             self.done = True
-            reward -= 20
+            reward = -10
+
         elif dist_to_target < 0.15:
             self.done = True
-            reward += 70
+            reward = 50
             self.info['Success'] = True
 
-        if not self.done:
-            if min(dist_robot_obstalces) < 0.5:
-            # penalty mode
-                for i in range(len(dist_robot_obstalces)):
-                    if dist_robot_obstalces[i] < 0.27:
-                        reward -= 0.50
-                        self.info['Collision'] = True
-                    elif dist_robot_obstalces[i] < 0.5:
-                        # reward += 50 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
-                        reward += 0
-            # reward mode
-            else:
-                reward += 20 * (self.prev_dist_to_target - dist_to_target) - 0.01
+        for i in range(len(dist_robot_obstalces)):
+            if dist_robot_obstalces[i] < 0.27:
+                reward = -50
+                self.info['Collision'] = True
+                self.done = True
+            if dist_robot_obstalces[i] < 0.6:
+                reward -= 40 * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
 
         self.prev_dist_to_target = dist_to_target
         self.prev_dist_robot_obstalces = dist_robot_obstalces
@@ -119,7 +113,7 @@ class TurtleBotEnv_APF(gym.Env):
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
         # self.target is the base position of the target
-        self.obstacle_bases = np.random.uniform(low=(-1.5, -1.5), high=(1.5, 1.5), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
         self.done = False
 
         x_target = 1.7

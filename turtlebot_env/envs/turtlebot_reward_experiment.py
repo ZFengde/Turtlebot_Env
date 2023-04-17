@@ -89,8 +89,8 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
 
         reward = self.c_e_target * (self.prev_dist_to_target - dist_to_target) + self.time_penalty
         
-        if (turtlebot_ob[0] >= 1.95 or turtlebot_ob[0] <= -1.95 or
-                turtlebot_ob[1] >= 1.95 or turtlebot_ob[1] <= -1.95):
+        if (turtlebot_ob[0] >= 2.2 or turtlebot_ob[0] <= -2.2 or
+                turtlebot_ob[1] >= 2.2 or turtlebot_ob[1] <= -2.2):
             self.done = True
             reward = self.out
 
