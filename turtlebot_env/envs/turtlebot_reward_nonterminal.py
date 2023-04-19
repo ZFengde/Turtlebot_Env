@@ -71,7 +71,7 @@ class TurtleBotEnv_Reward_Nonterminal(gym.Env):
             self.info['Success'] = True
 
         for i in range(len(dist_robot_obstalces)):
-            if dist_robot_obstalces[i] < 0.27:
+            if dist_robot_obstalces[i] < 0.25:
                 reward = -50
                 self.info['Collision'] = True
                 self.done = True
