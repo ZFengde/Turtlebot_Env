@@ -11,7 +11,7 @@ from turtlebot_env.resources.obstacle import Obstacle
 class TurtleBotEnv_Reward_Exp(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, use_gui=False, obstacle_num=7):
+    def __init__(self, use_gui=False, obstacle_num=7, indicator=1):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
@@ -45,13 +45,29 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         self.target = None
         self.prev_dist_to_target = None
         self.prev_dist_robot_obstalces = None
-        self.init_hyperparameters()
+        self.init_hyperparameters(indicator)
 
-    def init_hyperparameters(self):
-        self.c_e_target, self.c_e_obstacles = 20, -40
-        self.reach_target, self.collision = 50, -0.2
-        self.out, self.time_penalty = -10, -0.01
-
+    def init_hyperparameters(self, indicator):
+        if indicator == 1:
+            self.c_e_target, self.c_e_obstacles = 20, -40
+            self.reach_target, self.collision = 50, -30
+            self.out, self.time_penalty = -10, -0.01
+        elif indicator == 2:
+            self.c_e_target, self.c_e_obstacles = 20, -40
+            self.reach_target, self.collision = 50, -40
+            self.out, self.time_penalty = -10, -0.01
+        elif indicator == 3:
+            self.c_e_target, self.c_e_obstacles = 20, -50
+            self.reach_target, self.collision = 50, -0.2
+            self.out, self.time_penalty = -10, -0.01
+        elif indicator == 4:
+            self.c_e_target, self.c_e_obstacles = 20, -60
+            self.reach_target, self.collision = 50, -0.2
+            self.out, self.time_penalty = -10, -0.01
+        elif indicator == 5:
+            self.c_e_target, self.c_e_obstacles = 20, -70
+            self.reach_target, self.collision = 50, -0.2
+            self.out, self.time_penalty = -10, -0.01
 
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
