@@ -81,6 +81,7 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         for i in range(len(dist_robot_obstalces)):
             if dist_robot_obstalces[i] < 0.27:
                 reward += self.collision
+                self.done = True
                 self.info['Collision'] = True
             if dist_robot_obstalces[i] < 0.6:
                 reward += self.c_e_obstacles * (self.prev_dist_robot_obstalces[i] - dist_robot_obstalces[i])
