@@ -124,7 +124,7 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
 
         self.target = np.array([x_target, y_target])
 
-        self.obstacle_bases = np.random.uniform(low=(-0.8, -0.8), high=(0.8, 0.8), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
 
         self.done = False
         Target(self.client, self.target)
