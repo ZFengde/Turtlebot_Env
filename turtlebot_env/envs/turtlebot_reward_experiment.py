@@ -72,6 +72,16 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         self.c_e_target, self.c_e_obstacles = 20, -40
         self.reach_target, self.collision = 50, -0.2
         self.out, self.time_penalty = -10, -0.01
+        if indicator == 1:
+            self.negative_coef = 0
+        elif indicator == 2:
+            self.negative_coef = 0.1
+        elif indicator == 3:
+            self.negative_coef = 0.2
+        elif indicator == 4:
+            self.negative_coef = 0.3
+        elif indicator == 5:
+            self.negative_coef = 0.4
 
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
@@ -86,7 +96,11 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         dist_to_target = np.linalg.norm(pos - target)
         dist_robot_obstalces = np.linalg.norm((pos - self.obstacle_bases), axis=1)
 
-        reward = self.c_e_target * (self.prev_dist_to_target - dist_to_target) + self.time_penalty
+        if self.prev_dist_to_target - dist_to_target > 0:
+            reward = self.c_e_target * (self.prev_dist_to_target - dist_to_target) + self.time_penalty
+        else:
+            reward = self.negative_coef * self.c_e_target * (self.prev_dist_to_target - dist_to_target) + self.time_penalty
+
         
         if (turtlebot_ob[0] >= 2.2 or turtlebot_ob[0] <= -2.2 or
                 turtlebot_ob[1] >= 2.2 or turtlebot_ob[1] <= -2.2):
