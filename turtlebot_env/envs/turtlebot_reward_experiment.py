@@ -11,7 +11,7 @@ from turtlebot_env.resources.obstacle import Obstacle
 class TurtleBotEnv_Reward_Exp(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, use_gui=False, obstacle_num=7, indicator=1):
+    def __init__(self, use_gui=False, obstacle_num=7, indicator=2):
         self.use_gui = use_gui
         self.obstacle_num = obstacle_num
         if self.use_gui:
