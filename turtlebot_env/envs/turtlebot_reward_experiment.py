@@ -46,7 +46,6 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         self.prev_dist_to_target = None
         self.prev_dist_robot_obstalces = None
         self.init_hyperparameters(indicator)
-        self.rho = 0.6
 
     def init_hyperparameters(self, indicator):
         # if indicator == 1:
@@ -74,21 +73,22 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         self.reach_target, self.collision = 50, -0.2
         self.out, self.time_penalty = -10, -0.01
         self.negative_coef = 0
+        self.rho = 0.35
 
-        if indicator == 1:
-            self.rho = 0.6
-        elif indicator == 2:
-            self.rho = 0.55
-        elif indicator == 3:
-            self.rho = 0.50
-        elif indicator == 4:
-            self.rho = 0.45
-        elif indicator == 5:
-            self.rho = 0.40
-        elif indicator == 6:
-            self.rho = 0.35
-        elif indicator == 7:
-            self.rho = 0.30
+        # if indicator == 1:
+        #     self.rho = 0.6
+        # elif indicator == 2:
+        #     self.rho = 0.55
+        # elif indicator == 3:
+        #     self.rho = 0.50
+        # elif indicator == 4:
+        #     self.rho = 0.45
+        # elif indicator == 5:
+        #     self.rho = 0.40
+        # elif indicator == 6:
+        #     self.rho = 0.35
+        # elif indicator == 7:
+        #     self.rho = 0.30
 
     def step(self, action):
         self.turtlebot.apply_action((action + 1) * 3.25 * 5)
