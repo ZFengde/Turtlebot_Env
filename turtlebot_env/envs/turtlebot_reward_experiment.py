@@ -73,7 +73,7 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         self.reach_target, self.collision = 50, -0.2
         self.out, self.time_penalty = -10, -0.01
         self.negative_coef = 0
-        self.rho = 0.35
+        self.rho = 0.6
 
         # if indicator == 1:
         #     self.rho = 0.6
@@ -137,12 +137,13 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         p.resetSimulation(self.client)
         p.setGravity(0, 0, -9.8)
         Plane(self.client)
-        x = np.random.uniform(-1.7, 1.7)
+        x = -1.7
         y = np.random.uniform(-1.7, 1.7)
+
         pos = np.array([x, y])
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
-        x_target = np.random.uniform(-1.7, 1.7)
+        x_target = 1.7
         y_target = np.random.uniform(-1.7, 1.7)
 
         self.target = np.array([x_target, y_target])
