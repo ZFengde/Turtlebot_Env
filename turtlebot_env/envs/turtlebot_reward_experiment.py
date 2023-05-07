@@ -137,17 +137,17 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         p.resetSimulation(self.client)
         p.setGravity(0, 0, -9.8)
         Plane(self.client)
-        x = -1.7
+        x = np.random.uniform(-1.7, 1.7)
         y = np.random.uniform(-1.7, 1.7)
         pos = np.array([x, y])
         self.turtlebot = Turtlebot(self.client, Pos=pos)
 
-        x_target = 1.7
+        x_target = np.random.uniform(-1.7, 1.7)
         y_target = np.random.uniform(-1.7, 1.7)
 
         self.target = np.array([x_target, y_target])
 
-        self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
+        self.obstacle_bases = np.random.uniform(low=(-1.7, -1.7), high=(1.7, 1.7), size=(self.obstacle_num, 2))
 
         self.done = False
         Target(self.client, self.target)
