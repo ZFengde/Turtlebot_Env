@@ -1,5 +1,5 @@
 # v0 --- regular reward, navigation control
-import gym
+import gymnasium as gym
 import numpy as np
 import math
 import pybullet as p
@@ -88,7 +88,7 @@ class TurtleBotEnv_Navi(gym.Env):
         return [seed]
 
     # this is reset function for initialising each episode
-    def reset(self):
+    def reset(self, seed=None):
         p.resetSimulation(self.client)
         p.setGravity(0, 0, -9.8)
         # Reload the plane and car

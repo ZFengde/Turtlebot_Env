@@ -1,5 +1,5 @@
 # v3 --- obstacles avoidance environment with reward function
-import gym
+import gymnasium as gym
 import numpy as np
 import math
 import pybullet as p
@@ -110,11 +110,11 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
 
         if (turtlebot_ob[0] >= 2.2 or turtlebot_ob[0] <= -2.2 or
                 turtlebot_ob[1] >= 2.2 or turtlebot_ob[1] <= -2.2):
-            self.done = True
+            self.terminated = True
             reward = self.out
 
         elif dist_to_target < 0.15:
-            self.done = True
+            self.terminated = True
             reward = self.reach_target
             self.info['Success'] = True
 
@@ -127,13 +127,13 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
 
         self.prev_dist_to_target = dist_to_target
         self.prev_dist_robot_obstalces = dist_robot_obstalces
-        return obs, reward, self.done, self.info
+        return obs, reward, self.terminated, self.truncated, self.info
     
     def seed(self, seed=None):
-        np.random.seed(seed)
+        self.np_random, seed = gym.utils.seeding.np_random(seed)
         return [seed]
     
-    def reset(self):
+    def reset(self, seed=None):
         p.resetSimulation(self.client)
         p.setGravity(0, 0, -9.8)
         Plane(self.client)
@@ -150,7 +150,8 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
 
         self.obstacle_bases = np.random.uniform(low=(-1.3, -1.3), high=(1.3, 1.3), size=(self.obstacle_num, 2))
 
-        self.done = False
+        self.terminated = False
+        self.truncated = False
         Target(self.client, self.target)
         for i in range(len(self.obstacle_bases)):
             Obstacle(self.client, self.obstacle_bases[i])
@@ -163,7 +164,7 @@ class TurtleBotEnv_Reward_Exp(gym.Env):
         obs = np.concatenate((turtlebot_ob, self.target, self.obstacle_bases.flatten()))
         self.info = {'Success': False, 'Collision': False}
 
-        return obs
+        return obs, self.info
 
     def render(self, mode='human'):
         pass

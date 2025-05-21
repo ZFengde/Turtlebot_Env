@@ -1,6 +1,6 @@
 # this is for connecting entry point 
 
-from gym.envs.registration import register
+from gymnasium.envs.registration import register
 
 # navigation control, regular reward
 register(
